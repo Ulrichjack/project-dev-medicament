@@ -5,7 +5,7 @@
 **Choix retenu :** Laravel 10 (PHP 8.2)
 
 **Raisons :**
-- ✅ **Compétences de l’équipe** – Plusieurs membres ont déjà travaillé avec Laravel en cours.
+- ✅ **Compétences de l’équipe** – Plusieurs membres ont déjà travaillé avec Php en cours.
 - ✅ **Documentation abondante** – Laravel dispose d’une des documentations les plus claires et de milliers de tutoriels.
 - ✅ **Écosystème riche** – Outils intégrés (Eloquent ORM, Sanctum pour l’auth, Queues, Notifications).
 - ✅ **Performance suffisante** – Capable de gérer plusieurs centaines de requêtes/seconde avec un bon serveur.
@@ -13,7 +13,7 @@
 
 **Alternatives écartées :**
 - ❌ **NestJS** – Moins maîtrisé par l’équipe, courbe d’apprentissage plus raide.
-- ❌ **Spring Boot** – Aucune connaissance dans l’équipe, trop risqué pour un projet de 4 mois.
+- ❌ **Spring Boot** – Aucune connaissance dans l’équipe, trop risqué pour un projet de 2 mois.
 
 ---
 
@@ -27,26 +27,9 @@
 - ✅ **Performance** – Vite offre un développement ultra-rapide et des builds optimisés.
 - ✅ **Employabilité** – React est un atout majeur sur le CV.
 
-**Alternatives écartées :**
-- ❌ **Vue.js** – Moins maîtrisé collectivement (seulement 1 personne).
-
 ---
 
-### 2.3 Mobile – Flutter
 
-**Choix retenu :** Flutter 3.x (Dart)
-
-**Raisons :**
-- ✅ **Code unique** – Une seule base de code pour iOS et Android.
-- ✅ **Expérience de l’équipe** – Déjà utilisé en cours et en projet.
-- ✅ **UI/UX** – Rendu natif, très fluide, large gamme de widgets.
-- ✅ **Communauté** – Très active, nombreux packages pour géolocalisation, paiement, etc.
-
-**Alternatives écartées :**
-- ❌ **React Native** – Moins maîtrisé, plus de friction avec l’écosystème React web (équipe plus compétente sur Flutter).
-- ❌ **Kotlin/Swift natif** – Temps de développement doublé.
-
----
 
 ### 2.4 Base de données – PostgreSQL
 
@@ -98,9 +81,35 @@
 
 ### 2.8 Justification globale de la cohérence de la stack
 
-- **Laravel + React + Flutter** est une stack moderne, largement adoptée, et **parfaitement maîtrisée par l’équipe**.
+- **Laravel + React** est une stack moderne, largement adoptée, et **parfaitement maîtrisée par l’équipe**.
 - Le fait que plusieurs membres connaissent déjà **Laravel et React** permet d’attaquer le développement immédiatement, **sans phase d’apprentissage**.
 - **Flutter** assure une expérience mobile de qualité tout en mutualisant le travail sur iOS et Android.
 - **PostgreSQL + PostGIS** est le choix standard pour toute application de géolocalisation.
 - **Docker** garantit que tout le monde travaille dans le même environnement, évitant les “ça marche sur ma machine”.
 - L’ensemble est **réaliste pour 4 mois de développement** avec une équipe de 5 personnes.
+
+## 3. Modèle de Données
+
+Le schéma complet de la base de données est disponible ci-dessous :
+
+![Diagramme de classes](../conception/diagrammes/class-diagram.png)
+
+Nous avons modélisé 12 tables principales :
+- **users** : Gère tous les utilisateurs (clients, pharmaciens, livreurs, admins) via un champ `role`
+- **pharmacies** : Informations des pharmacies (géolocalisation, horaires)
+- **medicaments** : Catalogue des médicaments
+- **pharmacy_stocks** : Table pivot qui lie pharmacies et médicaments (avec prix et quantité)
+- **orders** : Commandes clients
+- **order_items** : Détails des commandes (lignes)
+- **deliveries** : Gestion des livraisons
+- **payments** : Transactions de paiement
+- **prescriptions** : Ordonnances uploadées
+- **notifications** : Système de notifications
+- **reviews** : Avis clients
+- **categories** : Catégories de médicaments
+
+Les relations clés :
+- 1 user → N orders (un client passe plusieurs commandes)
+- N pharmacies ↔ N medicaments (via pharmacy_stocks)
+- 1 order → 1 delivery (relation 1-1)
+- 1 order → 1 payment (relation 1-1)
