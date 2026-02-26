@@ -1,0 +1,91 @@
+<mxfile host="65bd71144e">
+    <diagram id="Ae3E6MLrN0oy2EKoQouM" name="Page-1">
+        <mxGraphModel dx="1263" dy="1025" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1654" pageHeight="1169" math="0" shadow="0">
+            <root>
+                <mxCell id="0"/>
+                <mxCell id="1" parent="0"/>
+                <mxCell id="h0" value="Phase" style="text;html=1;strokeColor=#2C5F8D;fillColor=#2C5F8D;align=center;verticalAlign=middle;fontStyle=1;fontColor=#FFFFFF;fontSize=13;" parent="1" vertex="1">
+                    <mxGeometry y="90" width="220" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="h1" value="Assign" style="text;html=1;strokeColor=#2C5F8D;fillColor=#2C5F8D;align=center;verticalAlign=middle;fontStyle=1;fontColor=#FFFFFF;fontSize=13;" parent="1" vertex="1">
+                    <mxGeometry x="220" y="90" width="100" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="dL" value="&lt;span style=&quot;color: rgb(255, 255, 255);&quot;&gt;JEUDI&lt;/span&gt;" style="text;html=1;strokeColor=#2C5F8D;fillColor=#2C5F8D;align=center;verticalAlign=middle;fontStyle=1;fontColor=#FFFFFF;fontSize=12;" parent="1" vertex="1">
+                    <mxGeometry x="320" y="90" width="260" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="dM" value="&lt;span style=&quot;color: rgb(255, 255, 255);&quot;&gt;VENDREDI&lt;/span&gt;" style="text;html=1;strokeColor=#2C5F8D;fillColor=#2C5F8D;align=center;verticalAlign=middle;fontStyle=1;fontColor=#FFFFFF;fontSize=12;" parent="1" vertex="1">
+                    <mxGeometry x="580" y="90" width="260" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="dMe" value="SAMEDI" style="text;html=1;strokeColor=#2C5F8D;fillColor=#2C5F8D;align=center;verticalAlign=middle;fontStyle=1;fontColor=#FFFFFF;fontSize=12;" parent="1" vertex="1">
+                    <mxGeometry x="840" y="90" width="260" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="dJ" value="DIMANCHE" style="text;html=1;strokeColor=#2C5F8D;fillColor=#2C5F8D;align=center;verticalAlign=middle;fontStyle=1;fontColor=#FFFFFF;fontSize=12;" parent="1" vertex="1">
+                    <mxGeometry x="1100" y="90" width="260" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="dV" value="LUNDI" style="text;html=1;strokeColor=#2C5F8D;fillColor=#2C5F8D;align=center;verticalAlign=middle;fontStyle=1;fontColor=#FFFFFF;fontSize=12;" parent="1" vertex="1">
+                    <mxGeometry x="1360" y="90" width="260" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="l1a" value="&amp;nbsp;Analyse &amp;amp; Documentation" style="text;html=1;strokeColor=#ddd;fillColor=#F5F7FA;align=left;verticalAlign=middle;fontSize=12;fontStyle=1;spacingLeft=8;" parent="1" vertex="1">
+                    <mxGeometry y="130" width="220" height="50" as="geometry"/>
+                </mxCell>
+                <mxCell id="l1b" value="NGUEPA&#39;A" style="text;html=1;strokeColor=#ddd;fillColor=#F5F7FA;align=center;verticalAlign=middle;fontSize=12;fontStyle=1;" parent="1" vertex="1">
+                    <mxGeometry x="220" y="130" width="100" height="50" as="geometry"/>
+                </mxCell>
+                <mxCell id="l1bar" value="CDC + Diagrammes UML" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#6B9FCE;strokeColor=#2C5F8D;fontColor=#FFFFFF;fontSize=11;fontStyle=1;" parent="1" vertex="1">
+                    <mxGeometry x="330" y="140" width="250" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="l2a" value="&amp;nbsp;Design UI/UX &amp;amp; Charte" style="text;html=1;strokeColor=#ddd;fillColor=#FFFFFF;align=left;verticalAlign=middle;fontSize=12;fontStyle=1;spacingLeft=8;" parent="1" vertex="1">
+                    <mxGeometry y="180" width="220" height="50" as="geometry"/>
+                </mxCell>
+                <mxCell id="l2b" value="MBOKOP&lt;div&gt;et&lt;/div&gt;&lt;div&gt;NANSI&lt;/div&gt;" style="text;html=1;strokeColor=#ddd;fillColor=#FFFFFF;align=center;verticalAlign=middle;fontSize=12;fontStyle=1;" parent="1" vertex="1">
+                    <mxGeometry x="220" y="180" width="100" height="50" as="geometry"/>
+                </mxCell>
+                <mxCell id="l2bar" value="Charte + Maquettes Figma" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#27AE60;strokeColor=#1a7a44;fontColor=#FFFFFF;fontSize=11;fontStyle=1;" parent="1" vertex="1">
+                    <mxGeometry x="590" y="190" width="240" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="l3a" value="&amp;nbsp;Backend (Laravel + BDD)" style="text;html=1;strokeColor=#ddd;fillColor=#F5F7FA;align=left;verticalAlign=middle;fontSize=12;fontStyle=1;spacingLeft=8;" parent="1" vertex="1">
+                    <mxGeometry y="230" width="220" height="50" as="geometry"/>
+                </mxCell>
+                <mxCell id="l3b" value="FOSSO" style="text;html=1;strokeColor=#ddd;fillColor=#F5F7FA;align=center;verticalAlign=middle;fontSize=12;fontStyle=1;" parent="1" vertex="1">
+                    <mxGeometry x="220" y="230" width="100" height="50" as="geometry"/>
+                </mxCell>
+                <mxCell id="l3bar1" value="Setup Laravel + Docker" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E74C3C;strokeColor=#c0392b;fontColor=#FFFFFF;fontSize=10;" parent="1" vertex="1">
+                    <mxGeometry x="590" y="240" width="120" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="l3bar2" value="API Auth + Médicaments + Commandes + Paiement" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E74C3C;strokeColor=#c0392b;fontColor=#FFFFFF;fontSize=10;" parent="1" vertex="1">
+                    <mxGeometry x="850" y="240" width="240" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="l4a" value="&amp;nbsp;Frontend React (Web)" style="text;html=1;strokeColor=#ddd;fillColor=#FFFFFF;align=left;verticalAlign=middle;fontSize=12;fontStyle=1;spacingLeft=8;" parent="1" vertex="1">
+                    <mxGeometry y="280" width="220" height="50" as="geometry"/>
+                </mxCell>
+                <mxCell id="l4b" value="TAKOU&amp;nbsp;&lt;div&gt;et&amp;nbsp;&lt;/div&gt;&lt;div&gt;MBOKOP&lt;/div&gt;" style="text;html=1;strokeColor=#ddd;fillColor=#FFFFFF;align=center;verticalAlign=middle;fontSize=12;fontStyle=1;" parent="1" vertex="1">
+                    <mxGeometry x="220" y="280" width="100" height="50" as="geometry"/>
+                </mxCell>
+                <mxCell id="l4bar1" value="Setup React + Auth + Recherche" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F39C12;strokeColor=#d68910;fontColor=#FFFFFF;fontSize=10;" parent="1" vertex="1">
+                    <mxGeometry x="1110" y="290" width="240" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="l4bar2" value="Commande + Paiement + Intégration API" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F39C12;strokeColor=#d68910;fontColor=#FFFFFF;fontSize=10;" parent="1" vertex="1">
+                    <mxGeometry x="1370" y="290" width="240" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="l5a" value="Tests &amp;amp; Intégration" style="text;html=1;strokeColor=#ddd;fillColor=#F5F7FA;align=left;verticalAlign=middle;fontSize=12;fontStyle=1;spacingLeft=8;" parent="1" vertex="1">
+                    <mxGeometry y="330" width="220" height="50" as="geometry"/>
+                </mxCell>
+                <mxCell id="l5b" value="NANSI&amp;nbsp;&lt;div&gt;et&amp;nbsp;&lt;/div&gt;&lt;div&gt;NGUEPA&#39;A&lt;/div&gt;" style="text;html=1;strokeColor=#ddd;fillColor=#F5F7FA;align=center;verticalAlign=middle;fontSize=12;fontStyle=1;" parent="1" vertex="1">
+                    <mxGeometry x="220" y="330" width="100" height="50" as="geometry"/>
+                </mxCell>
+                <mxCell id="l5bar" value="Tests + Corrections" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#8E44AD;strokeColor=#6c3483;fontColor=#FFFFFF;fontSize=11;fontStyle=1;" parent="1" vertex="1">
+                    <mxGeometry x="1370" y="340" width="120" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="l6a" value="&amp;nbsp;Déploiement &amp;amp; Doc finale" style="text;html=1;strokeColor=#ddd;fillColor=#FFFFFF;align=left;verticalAlign=middle;fontSize=12;fontStyle=1;spacingLeft=8;" parent="1" vertex="1">
+                    <mxGeometry y="380" width="220" height="50" as="geometry"/>
+                </mxCell>
+                <mxCell id="l6b" value="FOSSO" style="text;html=1;strokeColor=#ddd;fillColor=#FFFFFF;align=center;verticalAlign=middle;fontSize=12;fontStyle=1;" parent="1" vertex="1">
+                    <mxGeometry x="220" y="380" width="100" height="50" as="geometry"/>
+                </mxCell>
+                <mxCell id="l6bar" value="Docker + Doc" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#2C3E50;strokeColor=#1a252f;fontColor=#FFFFFF;fontSize=11;fontStyle=1;" parent="1" vertex="1">
+                    <mxGeometry x="1490" y="390" width="120" height="30" as="geometry"/>
+                </mxCell>
+            </root>
+        </mxGraphModel>
+    </diagram>
+</mxfile>
