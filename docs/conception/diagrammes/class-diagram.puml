@@ -1,0 +1,240 @@
+@startuml PharmApp - Diagramme de Classes v3
+
+' ============================================================
+' STYLE
+' ============================================================
+skinparam classAttributeIconSize 0
+skinparam class {
+    BackgroundColor White
+    BorderColor #2C5F8D
+    HeaderBackgroundColor #2C5F8D
+    HeaderFontColor White
+    ArrowColor #2C3E50
+    FontSize 12
+}
+skinparam stereotypeCBackgroundColor #27AE60
+skinparam stereotypeCBorderColor #27AE60
+hide empty members
+
+' ============================================================
+' HÉRITAGE : User (table unique en BDD avec champ role)
+' Livreur supprimé → livraison déléguée à des tiers
+' ============================================================
+
+abstract class User {
+    # id : INTEGER <<PK>>
+    # name : VARCHAR(100)
+    # email : VARCHAR(150) <<UNIQUE>>
+    # password : VARCHAR(255)
+    # phone : VARCHAR(20)
+    # role : ENUM {client, pharmacien, admin}
+    # is_active : BOOLEAN = true
+    # last_login : TIMESTAMP
+    # email_verified_at : TIMESTAMP
+    # created_at : TIMESTAMP
+    # updated_at : TIMESTAMP
+}
+
+class Client {
+    + passerCommande()
+    + uploadOrdonnance()
+    + rechercherMedicament()
+    + laisserAvis()
+}
+
+class Pharmacien {
+    ' pharmacy_id nullable : un pharmacien gère une seule pharmacie (MVP)
+    ' Phase 2 → table de liaison si chaîne de pharmacies
+    + pharmacy_id : INTEGER <<FK, NULL>>
+    --
+    + gererStock()
+    + traiterCommande()
+    + verifierOrdonnance()
+}
+
+class Administrateur {
+    + gererUtilisateurs()
+    + consulterStatistiques()
+    + gererLitiges()
+    + modererAvis()
+}
+
+' Héritage
+User <|-- Client
+User <|-- Pharmacien
+User <|-- Administrateur
+
+' ============================================================
+' CLASSES PRINCIPALES
+' ============================================================
+
+class Pharmacy {
+    + id : INTEGER <<PK>>
+    + name : VARCHAR(200)
+    + license_number : VARCHAR(50) <<UNIQUE>>
+    + address : TEXT
+    + email : VARCHAR(150)
+    + website : VARCHAR(300)
+    + description : TEXT
+    + latitude : DECIMAL(10,8)
+    + longitude : DECIMAL(11,8)
+    + phone : VARCHAR(20)
+    + opening_hours : JSON
+    + is_open : BOOLEAN = true
+    + rating : DECIMAL(3,2) = 0
+    + total_orders : INTEGER = 0
+    + created_at : TIMESTAMP
+}
+
+class Category {
+    + id : INTEGER <<PK>>
+    + name : VARCHAR(100)
+}
+
+class Medicament {
+    + id : INTEGER <<PK>>
+    + category_id : INTEGER <<FK>>
+    + name : VARCHAR(200)
+    + active_substance : VARCHAR(200)
+    + description : TEXT
+    + dosage : VARCHAR(100)
+    + prescription_required : BOOLEAN = false
+    + photo_url : VARCHAR(500)
+    + manufacturer : VARCHAR(200)
+    + created_at : TIMESTAMP
+}
+
+' ============================================================
+' CLASSE D'ASSOCIATION : PharmacyStock (N:N avec attributs)
+' min_stock_alert ici car chaque pharmacie a son propre seuil
+' ============================================================
+
+class PharmacyStock <<association>> {
+    + id : INTEGER <<PK>>
+    + pharmacy_id : INTEGER <<FK>>
+    + medicament_id : INTEGER <<FK>>
+    + quantity : INTEGER
+    + price : DECIMAL(10,2)
+    + is_available : BOOLEAN = true
+    + min_stock_alert : INTEGER = 5
+    + updated_at : TIMESTAMP
+    --
+    <<UNIQUE(pharmacy_id, medicament_id)>>
+}
+
+class Order {
+    + id : INTEGER <<PK>>
+    + user_id : INTEGER <<FK>>
+    + pharmacy_id : INTEGER <<FK>>
+    + total_amount : DECIMAL(10,2)
+    + delivery_fee : DECIMAL(10,2) = 0
+    + discount_code : VARCHAR(50)
+    + tax_amount : DECIMAL(10,2) = 0
+    ' "shipped" = transmis au transporteur tiers (remplace "delivering")
+    + status : ENUM {pending, confirmed, preparing,\n ready, shipped, delivered, cancelled}
+    + delivery_address : TEXT
+    + delivery_latitude : DECIMAL(10,8)
+    + delivery_longitude : DECIMAL(11,8)
+    + notes : TEXT
+    + created_at : TIMESTAMP
+    + delivered_at : TIMESTAMP
+}
+
+class OrderItem {
+    + id : INTEGER <<PK>>
+    + order_id : INTEGER <<FK>>
+    + medicament_id : INTEGER <<FK>>
+    + quantity : INTEGER
+    + unit_price : DECIMAL(10,2)
+}
+
+class Prescription {
+    + id : INTEGER <<PK>>
+    + user_id : INTEGER <<FK>>
+    + order_id : INTEGER <<FK>>
+    + photo_url : VARCHAR(500)
+    + verified_by_pharmacist : BOOLEAN = false
+    + created_at : TIMESTAMP
+}
+
+' Delivery simplifiée : livraison déléguée à un service tiers
+' PharmApp ne gère que le tracking_url retourné par le prestataire
+class Delivery {
+    + id : INTEGER <<PK>>
+    + order_id : INTEGER <<FK>> <<UNIQUE>>
+    + provider_name : VARCHAR(100)
+    + tracking_url : VARCHAR(500)
+    + status : ENUM {pending, picked, on_road, delivered}
+    + estimated_time : TIMESTAMP
+    + delivered_at : TIMESTAMP
+}
+
+class Payment {
+    + id : INTEGER <<PK>>
+    + order_id : INTEGER <<FK>> <<UNIQUE>>
+    + amount : DECIMAL(10,2)
+    + method : ENUM {mtn_mobile_money, orange_money, card}
+    + status : ENUM {pending, paid, failed, refunded}
+    + transaction_id : VARCHAR(200)
+    + created_at : TIMESTAMP
+}
+
+class Notification {
+    + id : INTEGER <<PK>>
+    + user_id : INTEGER <<FK>>
+    + type : ENUM {order_update, payment, delivery, stock_alert}
+    + message : TEXT
+    + is_read : BOOLEAN = false
+    + created_at : TIMESTAMP
+}
+
+class Review {
+    + id : INTEGER <<PK>>
+    + order_id : INTEGER <<FK>>
+    + user_id : INTEGER <<FK>>
+    + pharmacy_id : INTEGER <<FK>>
+    + rating : INTEGER {1..5}
+    + comment : TEXT
+    + is_visible : BOOLEAN = true
+    + created_at : TIMESTAMP
+}
+
+' ============================================================
+' RELATIONS UML
+' ============================================================
+
+' Agrégation : médicament peut exister sans catégorie
+Category "1" o-- "0..*" Medicament : contient >
+
+' Composition : PharmacyStock n'existe pas sans Pharmacy ni Medicament
+Pharmacy "1" *-- "0..*" PharmacyStock : stock
+Medicament "1" *-- "0..*" PharmacyStock : stocké dans
+
+' Association : pharmacien lié à une seule pharmacie via pharmacy_id (nullable)
+' Flèche simple car pharmacy_id est dans Pharmacien (FK nullable)
+Pharmacien "0..*" --> "1" Pharmacy : rattaché à >
+
+' Association : client passe des commandes
+Client "1" -- "0..*" Order : passe >
+
+' Association : pharmacy reçoit des commandes
+Pharmacy "1" -- "0..*" Order : reçoit >
+
+' Composition : OrderItem n'existe pas sans Order
+Order "1" *-- "1..*" OrderItem : contient >
+
+' Association : medicament référencé dans les lignes de commande
+Medicament "1" -- "0..*" OrderItem : est commandé dans >
+
+' Composition : ces entités n'ont pas de sens sans leur commande
+Order "1" *-- "0..1" Prescription : accompagnée de >
+Order "1" *-- "0..1" Delivery : suivie par >
+Order "1" *-- "1" Payment : réglée par >
+
+' Associations
+User "1" -- "0..*" Notification : reçoit >
+Client "1" -- "0..*" Review : rédige >
+Pharmacy "1" -- "0..*" Review : évaluée par >
+Order "1" -- "0..1" Review : fait l'objet de >
+
+@enduml
