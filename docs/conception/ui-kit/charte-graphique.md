@@ -4,335 +4,296 @@
 
 
 
-DOCUMENT DE CHARTE TECHNIQUE ET DESIGN
-
-APPLICATION DE RECHERCHE ET COMMANDE DE MEDICAMENT 
-
- Ce document définit les choix techniques, les conventions d’interface, les règles d’alignement, le style visuel et les standards de développement pour l’application de recherche, comparaison et commande de médicaments. Il sert de référence commune à toute l’équipe afin d’assurer cohérence, maintenabilité et professionnalisme.
 
 
-
-
-1. Architecture Technique Générale
-
-1.1 Stack proposée
-•	Frontend Web : React native
-•	Framework UI : Tailwind CSS
-•	Backend :  PHP (Laravel)
-•	Base de données : MySQL / PostgreSQL
-•	API : REST JSON
-•	Versioning : Git + GitHub (branches + pull requests)
-•	Paiement : API Mobile Money 
-
-1.2 Organisation du projet
-•	frontend/ → interfaces utilisateur
-•	backend/ → API et logique métier
-•	database/ → scripts SQL
-•	assets/ → images, icônes, logos
-•	docs/ → documentation technique
-
-
-2. Conventions d’Interface et Alignement
-•	Utilisation d’une grille 12 colonnes (responsive)
-•	Alignement principal à gauche pour les textes
-•	Titres centrés uniquement pour les pages d’accueil ou sections importantes
-•	Marges extérieures minimum : 16px
-•	Espacement vertical cohérent : 8px / 16px / 24px / 32px
-•	Tous les boutons alignés horizontalement quand ils sont groupés
-•	Formulaires en colonnes verticales claires
-
-
-3. Style des Boutons
-•	Coins arrondis (border-radius: 10px à 14px)
-•	Ombre légère pour effet moderne
-•	Hauteur minimale : 44px pour accessibilité mobile
-•	Icônes facultatives à gauche du texte
-•	Transitions douces (hover 0.2s)
-Types de boutons
-•	Primaire : Rechercher / Commander / Payer (couleur principale)
-•	Secondaire : Annuler / Retour
-•	Succès : Paiement validé / Disponible
-•	Danger : Supprimer / Annuler commande
-•	Désactivé : gris clair
-
-
-4. Palette de Couleurs Recommandée
-•	Bleu principal : confiance / santé
-•	Vert : succès / disponibilité
-•	Rouge : alertes / ruptures de stock
-•	Gris : éléments secondaires
-•	Blanc : fond principal
-
-
-5. Typographie (Police)
-•	Police principale : Poppins ou Roboto (moderne, lisible)
-•	Titres : Semi-bold
-•	Texte normal : Regular
-•	Hiérarchie recommandée : H1 28–32px, H2 22–24px, H3 18–20px, texte 14–16px
-•	Interligne : 1.5 pour la lisibilité
-
-
-6. Règles UX (Expérience Utilisateur)
-•	Recherche rapide visible en haut de chaque page
-•	Feedback visuel pour chaque action
-•	Statuts de commande clairs (couleurs + texte)
-•	Navigation simple : maximum 3 clics pour commander
-•	Responsive mobile obligatoire
-
-
-7. Bonnes Pratiques GitHub (Travail d’Équipe)
-•	1 fonctionnalité = 1 branche
-•	Nommage : feature/nom-fonctionnalite
-•	Pull Request obligatoire avant merge
-•	Messages de commit clairs
-•	Code review entre membres
-
-
-8. Objectif Global du Design
-L’application doit inspirer confiance, clarté et sécurité. L’utilisateur doit pouvoir rechercher, comparer et commander un médicament en moins de deux minutes. Le design doit être simple, professionnel, médical et rassurant.
-
-
-
-
-#  Palette de couleurs
-
-## Primaire
-- Hex : #2C5F8D
-- RGB : rgb(44,95,141)
-- Usage : boutons principaux, navigation, icônes actives
-
-## Secondaire (Succès)
-- Hex : #27AE60
-- RGB : rgb(39,174,96)
-- Usage : validation, succès, actions positives
-
-## Danger
-- Hex : #E74C3C
-- RGB : rgb(231,76,60)
-- Usage : erreurs, suppression, alertes critiques
-
-## Warning
-- Hex : #F39C12
-- RGB : rgb(243,156,18)
-- Usage : avertissements, attention
-
-## Fond principal
-- Hex : #FFFFFF
-- Usage : arrière-plan principal
-
-## Fond secondaire
-- Hex : #F5F7FA
-- Usage : sections, cards, blocs
-
-## Texte principal
-- Hex : #2C3E50
-- Usage : titres, paragraphes
-
-## Texte secondaire
-- Hex : #7F8C8D
-- Usage : placeholders, sous-titres, infos secondaires
+## Application de recherche et commande des médicaments
 
 ---
 
-#  Variables CSS globales
+# 1 Présentation du projet
 
-```css
-:root {
-  --color-primary: #2C5F8D;
-  --color-secondary: #27AE60;
-  --color-danger: #E74C3C;
-  --color-warning: #F39C12;
-  --color-bg: #FFFFFF;
-  --color-bg-alt: #F5F7FA;
-  --color-text: #2C3E50;
-  --color-text-light: #7F8C8D;
-}
+L’application est une plateforme numérique permettant aux utilisateurs de rechercher des médicaments, comparer les prix entre pharmacies, vérifier leur disponibilité et effectuer des commandes avec paiement sécurisé.
 
+### 🎯 Vision
 
+Faciliter l’accès rapide, sécurisé et transparent aux médicaments.
 
-# TYPOGRAPHIE 
+### 🎯 Valeurs
 
-#TITRE 
+* Fiabilité
+* Transparence
+* Accessibilité
+* Sécurité
+* Simplicité
 
-POLICE / Montserrat
-poids: 600/700
+---
 
+# 2 Identité visuelle
 
-#CORP DE TEXTE 
+L’identité visuelle repose sur trois piliers :
 
-Police: open ans
-poids: 400/500
+* **Santé**
+* **Confiance**
+* **Modernité**
 
+Elle doit inspirer :
 
-Import Google font 
+* Sécurité médicale
+* Professionnalisme
+* Simplicité d’utilisation
 
+---
 
-<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&family=Open+Sans:wght@400;500&display=swap" rel="stylesheet">
+# 3️⃣ Logo
 
+## 🔷 Concept du logo
 
+Le logo combine :
 
-# STYLE CSS
+* Une **croix médicale** (symbole universel de santé)
+* Une **gélule stylisée**
+* Une **icône panier ou localisation** (commande / disponibilité)
 
+Il représente :
 
-body {
-  font-family: 'Open Sans', sans-serif;
-  font-size: 16px;
-  line-height: 1.6;
-  color: var(--color-text);
-}
+> L’union entre santé, technologie et accessibilité.
 
-h1 { font-size: 32px; font-weight: 700; }
-h2 { font-size: 24px; font-weight: 700; }
-h3 { font-size: 20px; font-weight: 600; }
+---
 
+## 🛠 Construction du logo
 
-# BOUTON 
+### Structure :
 
-Bouton primaire 
+* Symbole à gauche
+* Nom de l’application à droite
+* Version horizontale et version verticale
 
-.btn-primary {
-  background-color: var(--color-primary);
-  color: white;
-  border: none;
-  border-radius: 8px;
-  padding: 12px 24px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: 0.3s;
-}
+### Proportions :
 
-.btn-primary:hover {
-  opacity: 0.9;
-}
+* Respect d’une zone de protection autour du logo
+* Aucun élément graphique ne doit empiéter sur cet espace
 
+### Versions :
 
-bouton Success
+* Version couleur principale
+* Version monochrome (blanc)
+* Version noir
 
+---
 
-.btn-success {
-  background-color: var(--color-secondary);
-  color: white;
-}
+# 4️⃣ Palette de couleurs
 
+La palette repose sur des couleurs associées au domaine médical.
 
-Bouton danger 
+### 🎨 Couleurs principales
 
-.btn-danger {
-  background-color: var(--color-danger);
-  color: white;
-}
+* 🔵 Bleu médical (confiance, sécurité)
+* 🟢 Vert pharmacie (santé, disponibilité)
+* ⚪ Blanc (pureté, hygiène)
 
+### 🎨 Couleurs secondaires
 
-Bouton secondaire (outline)
+* Gris clair (neutralité)
+* Rouge discret (urgence / notification)
 
-.btn-outline {
-  background: transparent;
-  border: 2px solid var(--color-primary);
-  color: var(--color-primary);
-}
+---
 
+## Signification des couleurs
 
-#INPUT CHAMP DE FORMULAIRE 
-Text, email , password, textarea,
+* Bleu → Fiabilité et technologie
+* Vert → Santé et accessibilité
+* Blanc → Transparence
+* Rouge → Alertes et notifications importantes
 
-input[type="text"],
-input[type="email"],
-input[type="password"],
-textarea {
-  width: 100%;
-  border: 1px solid #E0E0E0;
-  border-radius: 6px;
-  padding: 12px 16px;
-  font-family: 'Open Sans', sans-serif;
-  font-size: 16px;
-  transition: border 0.3s, box-shadow 0.3s;
-}
+---
 
-input:focus,
-textarea:focus {
-  outline: none;
-  border-color: var(--color-primary);
-  box-shadow: 0 0 0 3px rgba(44,95,141,0.1);
-}
+# 5️⃣ Typographie
 
-::placeholder {
-  color: var(--color-text-light);
-}
+## Police principale
 
+Sans-serif moderne (ex : Poppins, Roboto)
 
+Utilisée pour :
 
-#CARDS UTILISE POUR : produits,médicaments, 
-informations patients, dashboard
+* Titres
+* Boutons
+* Navigation
 
-.card {
-  background-color: var(--color-bg);
-  border: 1px solid #E8ECF0;
-  border-radius: 12px;
-  padding: 16px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-  transition: all 0.3s;
-}
+## Police secondaire
 
-.card:hover {
-  box-shadow: 0 4px 16px rgba(0,0,0,0.12);
-  transform: translateY(-2px);
-}
+Sans-serif légère
 
+Utilisée pour :
 
-#ICONE
+* Descriptions
+* Textes longs
+* Informations secondaires
 
+### Règles :
 
-Bibliotheque: Font Awesome 6 
+* Hiérarchie claire (H1, H2, H3)
+* Taille minimum lisible sur mobile
+* Contraste fort avec le fond
 
-Icônes principales
+---
 
-Recherche → fa-magnifying-glass
+# 6 Iconographie
 
-Panier → fa-cart-shopping
+Les icônes doivent être :
 
-Localisation → fa-location-dot
+* Simples
+* Linéaires (outline)
+* Uniformes
+* Arrondies
 
-Paiement → fa-credit-card
+### Exemples d’icônes :
 
-Livraison → fa-truck
+* 🔍 Recherche
+* 🛒 Panier
+* 💊 Médicament
+* 📍 Localisation
+* 💳 Paiement
+* 🔔 Notification
+* 📦 Livraison
 
-Succès → fa-circle-check
+Style cohérent, même épaisseur de trait.
 
-Erreur → fa-circle-exclamation
+---
 
-Notifications → fa-bell
+# 7 Images et illustrations
 
-Profil → fa-user
+### Style recommandé :
 
-Paramètres → fa-gear
+* Illustrations vectorielles modernes
+* Photos lumineuses
+* Arrière-plan clair
 
-Tailles recommandées
+### Règles :
 
-16px → petite
+* Éviter images trop chargées
+* Favoriser minimalisme
+* Respecter cohérence couleur
 
-24px → moyenne
+---
 
-32px → grande
+# 8 Interface Utilisateur (UI)
 
+##  Principes de design
 
+* Minimaliste
+* Intuitive
+* Hiérarchie claire
+* Boutons visibles
+* Navigation simple
 
-#Règles générales
+---
 
-Interface simple et claire
+##  Design des écrans
 
-Couleurs médicales (bleu + vert)
+### 1. Écran d’accueil
 
-Coins arrondis
+* Barre de recherche centrale
+* Catégories visibles
+* Promotions ou alertes
 
-Ombres légères
+### 2. Résultats de recherche
 
-Lisibilité prioritaire
+* Liste des médicaments
+* Prix affiché clairement
+* Bouton “Voir pharmacies”
 
-Mobile friendly
+### 3. Détail médicament
 
+* Image
+* Description
+* Disponibilité
+* Bouton Ajouter au panier
 
+### 4. Panier
 
+* Liste produits
+* Quantité modifiable
+* Total
+* Bouton paiement
 
+### 5. Paiement
 
+* Choix mode de paiement
+* Confirmation sécurisée
 
+### 6. Tableau de bord pharmacie
+
+* Statistiques
+* Stock
+* Commandes reçues
+
+---
+
+# 9 Adaptation multisupport (Responsive Design)
+
+L’application doit être compatible :
+
+* 📱 Mobile (priorité)
+* 💻 Ordinateur
+* 📟 Tablette
+
+## Règles :
+
+* Design Mobile First
+* Boutons adaptés au tactile
+* Texte lisible sur petit écran
+* Navigation simplifiée sur mobile
+
+---
+
+# 🔟 Ton et communication
+
+Le ton utilisé dans l’application doit être :
+
+* Clair
+* Rassurant
+* Professionnel
+* Accessible
+
+### Exemple :
+
+❌ "Erreur fatale"
+✅ "Une erreur est survenue. Veuillez réessayer."
+
+---
+
+# 11 Règles d’utilisation de la charte
+
+Il est interdit :
+
+* De modifier les couleurs principales
+* D’étirer le logo
+* De changer la typographie
+* D’utiliser des icônes non conformes
+
+Toute évolution graphique doit respecter :
+
+* La cohérence visuelle
+* L’identité médicale
+* La simplicité d’usage
+
+---
+
+# 🎓 Conclusion professionnelle
+
+Cette charte graphique garantit :
+
+* Une cohérence visuelle
+* Une image professionnelle
+* Une expérience utilisateur optimisée
+* Une reconnaissance forte de la marque
+
+Elle servira de référence pour :
+
+* Les développeurs
+* Les designers
+* L’équipe marketing
+* Les partenaires pharmacies
+
+---
 
