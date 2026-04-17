@@ -4,24 +4,40 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Database\Factories\UserFactory;
-use Illuminate\Database\Eloquent\Attributes\Fillable;
-use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use Laravel\Sanctum\HasApiTokens;
 
-#[Fillable(['name', 'email', 'password'])]
-#[Hidden(['password', 'remember_token'])]
 class User extends Authenticatable
 {
     /** @use HasFactory<UserFactory> */
-    use HasFactory, Notifiable;
-
+    use HasApiTokens ,HasFactory, Notifiable , SoftDeletes;
     /**
      * Get the attributes that should be cast.
      *
      * @return array<string, string>
      */
+
+    protected $fillable = [
+        'name',
+        'email',
+        'password',
+        'phone',
+        'role',
+        'is_active'
+    ];
+
+    /**
+     * The attributes that should be hidden for serialization.
+     * (Les colonnes qu'on ne veut JAMAIS renvoyer dans l'API, ex: le mot de passe)
+     */
+    protected $hidden = [
+        'password',
+        'remember_token',
+    ];
+
     protected function casts(): array
     {
         return [
@@ -29,4 +45,19 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+
+    // --- NOS METHODES DE VERIFICATION ---
+   public function isClient(){
+        return $this->role === "client";
+    }
+
+    public function isPharmacien(){
+        return $this->role === "pharmacien";
+    }
+
+    public function isAdmin(){
+        return $this->role === "admin";
+    }
+
 }
+
