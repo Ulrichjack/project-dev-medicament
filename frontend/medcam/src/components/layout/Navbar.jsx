@@ -24,14 +24,12 @@ export default function Navbar() {
 
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg bg-[#2C5F8D] flex items-center justify-center">
-              <i className="fa-solid fa-pills text-white text-sm" />
-            </div>
+            <img src="/logo.png" alt="MEDCAM" className="h-8 w-auto" />
             <span
               className="text-xl font-bold text-[#2C5F8D]"
               style={{ fontFamily: "Montserrat, sans-serif" }}
             >
-              PharmApp
+              MEDCAM
             </span>
           </Link>
 
