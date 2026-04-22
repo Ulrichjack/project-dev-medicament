@@ -55,6 +55,12 @@ class AuthController extends Controller
         return $this->successResponse(null, 'Déconnexion réussie', 200);
     }
 
+    public function me(Request $request): JsonResponse
+    {
+        // Retourne l'utilisateur actuellement connecté grâce à son token
+        return $this->successResponse($request->user(), 'Profil utilisateur', 200);
+    }
+
 
 
 }
