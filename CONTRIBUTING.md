@@ -53,9 +53,7 @@ cd ~/Documents
 git clone https://github.com/Ulrichjack/project-dev-medicament.git
 
 # 3. Entrer dans le dossier
-cd projet-pharmacieT 
-
-µµ
+cd projet-pharmacie
 
 # 4. Vérifier que tu es sur la branche develop
 git branch

@@ -1,21 +1,37 @@
-import axios from 'axios';
+import axios from 'axios'
 
-// On configure l'URL de base de l'API Laravel
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_URL || 'http://localhost:8000/api',
   headers: {
     'Content-Type': 'application/json',
-    'Accept': 'application/json'
-  }
-});
+  },
+})
 
-// Intercepteur pour ajouter le Token d'authentification automatiquement (si l'utilisateur est connecté)
-api.interceptors.request.use(config => {
-  const token = localStorage.getItem('token');
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
-  }
-  return config;
-});
+// ─── INTERCEPTEUR REQUEST ─────────────────────────────
+// Ajoute automatiquement le token à chaque requête
+api.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem('token')
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`
+    }
+    return config
+  },
+  (error) => Promise.reject(error)
+)
 
-export default api;
+// ─── INTERCEPTEUR RESPONSE ────────────────────────────
+// Si 401 → token expiré → on nettoie et on redirige
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response?.status === 401) {
+      localStorage.removeItem('token')
+      localStorage.removeItem('user')
+      window.location.href = '/login'
+    }
+    return Promise.reject(error)
+  }
+)
+
+export default api

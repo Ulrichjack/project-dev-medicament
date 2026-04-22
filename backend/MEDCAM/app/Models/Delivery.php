@@ -6,5 +6,17 @@ use Illuminate\Database\Eloquent\Model;
 
 class Delivery extends Model
 {
-    //
+    protected $fillable = [
+        'order_id',
+        'provider_name',
+        'tracking_url',
+        'status',
+        'estimated_time',
+        'delivered_at'
+    ];
+
+    public function order()
+    {
+        return $this->belongsTo(Order::class);
+    }
 }
