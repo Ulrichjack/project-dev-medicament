@@ -1,11 +1,27 @@
+// src/services/paymentService.js
+// Format réponse Laravel : { success: true, message: "...", data: { ... } }
+
 import api from './api';
 
 const paymentService = {
+
+  // POST /payments/{orderId}/initiate
+  // body: { method: 'mtn_mobile_money'|'orange_money', phone_number: '677XXXXXX' }
+  // retourne { transaction_id, ... }
   async initiatePayment(orderId, method, phoneNumber) {
-    return api.post(`/payments/${orderId}/initiate`, { method, phone_number: phoneNumber });
+    const res = await api.post(`/payments/${orderId}/initiate`, {
+      method,
+      phone_number: phoneNumber,
+    });
+    return res.data.data; // { transaction_id }
   },
-  async getPaymentStatus(orderId) {
-    return api.get(`/payments/${orderId}/status`);
+
+  // GET /payments/{orderId}/status
+  // retourne le statut : 'pending' | 'paid' | 'failed'
+  async getStatus(orderId) {
+    const res = await api.get(`/payments/${orderId}/status`);
+    return res.data.data.status; // string direct
   },
 };
+
 export default paymentService;
