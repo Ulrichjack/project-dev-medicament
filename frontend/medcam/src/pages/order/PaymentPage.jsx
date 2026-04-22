@@ -1,4 +1,3 @@
-// src/pages/order/PaymentPage.jsx
 import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import paymentService from '../../services/paymentService';
@@ -81,7 +80,7 @@ export default function PaymentPage() {
     return '';
   };
 
-  // ─── Lancer le paiement ──────────────────────────────────────────────────────
+  // ─── Lancer le paiement ─────────────────────────────────────────────────���────
   const handlePay = async () => {
     const err = validatePhone(phone);
     if (err) { setPhoneError(err); return; }

@@ -13,13 +13,6 @@ const paymentService = {
       method,
       phone_number: phoneNumber,
     });
-<<<<<<< Updated upstream
-    return res.data.data;
-  },
-  async getStatus(orderId) {
-    const res = await api.get(`/payments/${orderId}/status`);
-    return res.data.data.status;
-=======
     return res.data.data; // { transaction_id }
   },
 
@@ -28,7 +21,6 @@ const paymentService = {
   async getStatus(orderId) {
     const res = await api.get(`/payments/${orderId}/status`);
     return res.data.data.status; // string direct
->>>>>>> Stashed changes
   },
 };
 

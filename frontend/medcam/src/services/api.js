@@ -1,47 +1,37 @@
-// src/services/api.js
-// ─────────────────────────────────────────────────────────────────────────────
-// ⚠️  FICHIER TEMPORAIRE (mock) — À REMPLACER par le vrai api.js de Sonia
-// ─────────────────────────────────────────────────────────────────────────────
-// Quand Sonia pousse api.js sur develop :
-//   1. git pull origin develop
-//   2. Copie son api.js ici (elle utilisera probablement axios)
-//   3. Vérifie que BASE_URL correspond à ton backend Laravel
-//   4. Supprime ce commentaire
-// ─────────────────────────────────────────────────────────────────────────────
+import axios from 'axios'
 
-const BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
-/**
- * Wrapper fetch avec gestion d'erreurs et token JWT
- */
-async function request(endpoint, options = {}) {
-  const token = localStorage.getItem('auth_token');
+const api = axios.create({
+  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:8000/api',
+  headers: {
+    'Content-Type': 'application/json',
+  },
+})
 
-  const config = {
-    headers: {
-      'Content-Type': 'application/json',
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
-      ...options.headers,
-    },
-    ...options,
-  };
+// ─── INTERCEPTEUR REQUEST ─────────────────────────────
+// Ajoute automatiquement le token à chaque requête
+api.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem('token')
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`
+    }
+    return config
+  },
+  (error) => Promise.reject(error)
+)
 
-  const response = await fetch(`${BASE_URL}${endpoint}`, config);
-
-  if (!response.ok) {
-    const error = await response.json().catch(() => ({}));
-    throw new Error(error.message || `HTTP ${response.status}`);
+// ─── INTERCEPTEUR RESPONSE ────────────────────────────
+// Si 401 → token expiré → on nettoie et on redirige
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response?.status === 401) {
+      localStorage.removeItem('token')
+      localStorage.removeItem('user')
+      window.location.href = '/login'
+    }
+    return Promise.reject(error)
   }
+)
 
-  return response.json();
-}
-
-const api = {
-  get: (endpoint) => request(endpoint, { method: 'GET' }),
-  post: (endpoint, data) =>
-    request(endpoint, { method: 'POST', body: JSON.stringify(data) }),
-  patch: (endpoint, data) =>
-    request(endpoint, { method: 'PATCH', body: JSON.stringify(data) }),
-  delete: (endpoint) => request(endpoint, { method: 'DELETE' }),
-};
-
-export default api;
+export default api

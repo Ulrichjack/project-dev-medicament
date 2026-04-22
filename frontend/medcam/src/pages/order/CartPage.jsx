@@ -1,4 +1,3 @@
-// src/pages/order/CartPage.jsx
 import React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
@@ -53,14 +52,12 @@ export default function CartPage() {
   // ─── PANIER NON VIDE ─────────────────────────────────────────────────────────
   return (
     <div className="min-h-screen bg-[#F0F4FF]">
-
       {/* Header */}
       <div className="bg-white border-b border-[#E2E8F0] sticky top-0 z-10">
         <div className="max-w-2xl mx-auto px-4 h-16 flex items-center justify-between">
           <button
             onClick={() => navigate(-1)}
-            className="w-9 h-9 rounded-xl border border-[#E2E8F0] flex items-center justify-center
-              hover:bg-slate-50 transition-colors text-[#64748B] text-sm"
+            className="w-9 h-9 rounded-xl border border-[#E2E8F0] flex items-center justify-center hover:bg-slate-50 transition-colors text-[#64748B] text-sm"
           >
             <i className="fa-solid fa-arrow-left" />
           </button>
@@ -75,7 +72,6 @@ export default function CartPage() {
       </div>
 
       <div className="max-w-2xl mx-auto px-4 py-5 pb-36">
-
         {/* Bannière pharmacie */}
         <div className="bg-[#1E3A8A] rounded-2xl p-4 mb-5 flex items-center gap-3">
           <div className="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center flex-shrink-0">
@@ -133,9 +129,7 @@ export default function CartPage() {
         <div className="max-w-2xl mx-auto">
           <button
             onClick={() => navigate('/checkout')}
-            className="w-full bg-[#1E3A8A] text-white py-4 rounded-xl font-bold text-base
-              hover:bg-[#1e40af] transition-all duration-200 active:scale-[0.98]
-              shadow-lg shadow-blue-900/25 flex items-center justify-center gap-2"
+            className="w-full bg-[#1E3A8A] text-white py-4 rounded-xl font-bold text-base hover:bg-[#1e40af] transition-all duration-200 active:scale-[0.98] shadow-lg shadow-blue-900/25 flex items-center justify-center gap-2"
             style={{ fontFamily: 'Montserrat, sans-serif' }}
           >
             <i className="fa-solid fa-bag-shopping text-sm" />

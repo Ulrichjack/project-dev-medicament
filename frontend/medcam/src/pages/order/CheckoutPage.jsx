@@ -1,4 +1,3 @@
-// src/pages/order/CheckoutPage.jsx
 import React, { useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
@@ -23,8 +22,8 @@ export default function CheckoutPage() {
 
   const [address, setAddress]       = useState('');
   const [notes, setNotes]           = useState('');
-  const [coords, setCoords]         = useState(null);      // { lat, lng }
-  const [geoStatus, setGeoStatus]   = useState('idle');    // idle | loading | success | error
+  const [coords, setCoords]         = useState(null);
+  const [geoStatus, setGeoStatus]   = useState('idle');
   const [loading, setLoading]       = useState(false);
   const [error, setError]           = useState('');
 
@@ -68,13 +67,11 @@ export default function CheckoutPage() {
       };
 
       const order = await orderService.createOrder(orderData);
-      // order = { id, status, total_amount, ... }
 
       dispatch(clearCart());
       navigate(`/payment/${order.id}`);
 
     } catch (err) {
-      // Erreur stock Laravel → message lisible
       const msg = err?.response?.data?.message || err.message || 'Erreur lors de la commande.';
       setError(msg);
     } finally {
@@ -99,7 +96,6 @@ export default function CheckoutPage() {
 
   return (
     <div className="min-h-screen bg-[#F0F4FF]">
-
       {/* Header */}
       <div className="bg-white border-b border-[#E2E8F0] sticky top-0 z-10">
         <div className="max-w-2xl mx-auto px-4 h-16 flex items-center justify-between">
@@ -135,7 +131,6 @@ export default function CheckoutPage() {
       </div>
 
       <div className="max-w-2xl mx-auto px-4 py-5 pb-36 space-y-4">
-
         {/* Récapitulatif commande */}
         <div>
           <p className="text-xs font-bold text-[#64748B] uppercase tracking-wider mb-2">Récapitulatif</p>
@@ -177,7 +172,6 @@ export default function CheckoutPage() {
         <div>
           <p className="text-xs font-bold text-[#64748B] uppercase tracking-wider mb-2">Adresse de livraison</p>
           <div className="bg-white rounded-2xl border border-[#E2E8F0] p-4 space-y-4">
-
             {/* Adresse */}
             <div>
               <label className="block text-sm font-bold text-[#1E293B] mb-2">
@@ -188,9 +182,7 @@ export default function CheckoutPage() {
                 value={address}
                 onChange={(e) => setAddress(e.target.value)}
                 placeholder="Ex : Rue des Palmiers, Quartier Bonanjo, face au carrefour..."
-                className={`w-full px-4 py-3 rounded-xl border text-sm resize-none transition-colors
-                  focus:outline-none focus:border-[#1E3A8A] focus:ring-2 focus:ring-[#1E3A8A]/10
-                  placeholder:text-slate-300 ${!address && error ? 'border-red-300' : 'border-[#E2E8F0]'}`}
+                className={`w-full px-4 py-3 rounded-xl border text-sm resize-none transition-colors focus:outline-none focus:border-[#1E3A8A] focus:ring-2 focus:ring-[#1E3A8A]/10 placeholder:text-slate-300 ${!address && error ? 'border-red-300' : 'border-[#E2E8F0]'}`}
               />
             </div>
 
@@ -198,14 +190,7 @@ export default function CheckoutPage() {
             <button
               onClick={handleGetGPS}
               disabled={geoStatus === 'loading'}
-              className={`w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl border
-                text-sm font-semibold transition-all duration-200
-                ${geoStatus === 'success'
-                  ? 'bg-green-50 border-green-200 text-green-700'
-                  : geoStatus === 'error'
-                  ? 'bg-orange-50 border-orange-200 text-orange-600'
-                  : 'bg-[#F0F4FF] border-[#E2E8F0] text-[#1E3A8A] hover:bg-blue-50'
-                } disabled:opacity-60`}
+              className={`w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl border text-sm font-semibold transition-all duration-200 ${geoStatus === 'success' ? 'bg-green-50 border-green-200 text-green-700' : geoStatus === 'error' ? 'bg-orange-50 border-orange-200 text-orange-600' : 'bg-[#F0F4FF] border-[#E2E8F0] text-[#1E3A8A] hover:bg-blue-50'} disabled:opacity-60`}
             >
               <i className={`fa-solid ${geoIcon} text-sm`} />
               {geoText}
@@ -221,9 +206,7 @@ export default function CheckoutPage() {
                 value={notes}
                 onChange={(e) => setNotes(e.target.value)}
                 placeholder="Ex: Quartier Bastos, bâtiment bleu, 3ème étage"
-                className="w-full px-4 py-3 rounded-xl border border-[#E2E8F0] text-sm resize-none
-                  focus:outline-none focus:border-[#1E3A8A] focus:ring-2 focus:ring-[#1E3A8A]/10
-                  placeholder:text-slate-300"
+                className="w-full px-4 py-3 rounded-xl border border-[#E2E8F0] text-sm resize-none focus:outline-none focus:border-[#1E3A8A] focus:ring-2 focus:ring-[#1E3A8A]/10 placeholder:text-slate-300"
               />
             </div>
           </div>
@@ -244,10 +227,7 @@ export default function CheckoutPage() {
           <button
             onClick={handleSubmit}
             disabled={loading}
-            className="w-full bg-[#1E3A8A] text-white py-4 rounded-xl font-bold text-base
-              hover:bg-[#1e40af] transition-all duration-200 active:scale-[0.98]
-              flex items-center justify-center gap-2 shadow-lg shadow-blue-900/25
-              disabled:opacity-60 disabled:cursor-not-allowed"
+            className="w-full bg-[#1E3A8A] text-white py-4 rounded-xl font-bold text-base hover:bg-[#1e40af] transition-all duration-200 active:scale-[0.98] flex items-center justify-center gap-2 shadow-lg shadow-blue-900/25 disabled:opacity-60 disabled:cursor-not-allowed"
             style={{ fontFamily: 'Montserrat, sans-serif' }}
           >
             {loading ? (
