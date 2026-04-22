@@ -1,14 +1,11 @@
-// src/store/index.js
 import { configureStore } from '@reduxjs/toolkit';
 import cartReducer from './cartSlice';
-
-// authSlice sera ajouté par Leslie — ajoute-le ici quand il pousse
-// import authReducer from './authSlice';
+import authReducer from './authSlice';
 
 export const store = configureStore({
   reducer: {
+    auth: authReducer,
     cart: cartReducer,
-    // auth: authReducer,   // ← décommente quand Leslie pousse authSlice
   },
 });
 
