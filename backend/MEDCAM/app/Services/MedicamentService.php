@@ -7,14 +7,20 @@ use Illuminate\Support\Facades\DB;
 
 class MedicamentService
 {
-    public function search(string $query, array $filters =[]){
+    public function search(string $query, array $filters = [])
+    {
+        // 1. On demande à Laravel quel moteur de base de données on utilise actuellement
+        $operator = DB::connection()->getDriverName() === 'pgsql' ? 'ILIKE' : 'LIKE';
 
         $requete = Medicament::query()
             ->with('category')
-            ->where(function($q) use ($query) {
-                $q->where('name', 'ILIKE', '%' . $query . '%')
-                    ->orWhere('active_substance', 'ILIKE', '%' . $query . '%');
-        });
+            ->where(function($q) use ($query, $operator) { // <-- N'oublie pas d'ajouter $operator ici
+
+                // 2. On utilise la variable $operator au lieu d'écrire 'ILIKE' en dur
+                $q->where('name', $operator, '%' . $query . '%')
+                  ->orWhere('active_substance', $operator, '%' . $query . '%');
+            });
+
         if (isset($filters['category_id'])){
             $requete->where('category_id', $filters['category_id']);
         }
