@@ -3,10 +3,12 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\MedicamentController;
+use App\Http\Controllers\Api\NotificationController;
 use App\Http\Controllers\Api\PharmacyController;
 use App\Http\Controllers\Api\OrderController;
 use App\Http\Controllers\Api\PaymentController;
 use App\Http\Controllers\Api\PharmacistController;
+use App\Http\Controllers\Api\ReviewController;
 
 /*
 |--------------------------------------------------------------------------
@@ -42,6 +44,13 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // Paiement
     Route::post('/orders/{id}/pay', [PaymentController::class, 'simulate']);
+
+    // Notifications
+    Route::get('/notifications', [NotificationController::class, 'index']);
+    Route::patch('/notifications/{id}/read', [NotificationController::class, 'markAsRead']);
+
+    //Review
+    Route::post('/reviews', [ReviewController::class, 'store']);
 });
 
 
@@ -53,5 +62,13 @@ Route::middleware('auth:sanctum')->group(function () {
 Route::middleware(['auth:sanctum', 'role:pharmacien'])->prefix('pharmacist')->group(function () {
 
     Route::get('/orders', [PharmacistController::class, 'getOrders']);
+
+    //Gestion des commandes
+    Route::get('/orders', [PharmacistController::class, 'getOrders']);
+    Route::patch('/orders/{orderId}/status', [PharmacistController::class, 'updateOrderStatus']);
+
+    // Gestion des stocks
+    Route::post('/stock', [PharmacistController::class, 'addStock']);
+    Route::patch('/stock/{stockId}', [PharmacistController::class, 'updateStock']);
 
 });
