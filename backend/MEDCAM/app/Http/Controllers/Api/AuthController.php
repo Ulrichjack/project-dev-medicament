@@ -6,6 +6,7 @@ use App\Traits\ApiResponse;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\LoginRequest;
 use App\Http\Requests\Auth\RegisterRequest;
+use App\Http\Resources\UserResource;
 use App\Services\AuthService;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
@@ -26,10 +27,10 @@ class AuthController extends Controller
 
         $result = $this->authService->register($data);
         return $this->successResponse([
-            'user' => $result['user'],
-            'token' => $result ['token'],
-            'token_type' => 'Bearer',
-        ], 'Inscription réussie', 201);
+        'user' => new UserResource($result['user']), // <-- ICI
+        'token' => $result['token'],
+        'token_type' => 'Bearer',
+        ], 'Message de succès', 200);
     }
 
 
@@ -40,10 +41,10 @@ class AuthController extends Controller
             $result = $this->authService->login($data);
 
            return $this->successResponse([
-            'user' => $result['user'],
+            'user' => new UserResource($result['user']), // <-- ICI
             'token' => $result['token'],
             'token_type' => 'Bearer',
-        ], 'Connexion réussie', 200);
+        ], 'Message de succès', 200);
     }
 
 
@@ -57,8 +58,7 @@ class AuthController extends Controller
 
     public function me(Request $request): JsonResponse
     {
-        // Retourne l'utilisateur actuellement connecté grâce à son token
-        return $this->successResponse($request->user(), 'Profil utilisateur', 200);
+        return $this->successResponse(new UserResource($request->user()), 'Profil utilisateur', 200);
     }
 
 
