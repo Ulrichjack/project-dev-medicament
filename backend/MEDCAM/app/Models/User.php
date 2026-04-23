@@ -26,6 +26,7 @@ class User extends Authenticatable
         'password',
         'phone',
         'role',
+        'pharmacy_id',
         'is_active'
     ];
 
@@ -57,6 +58,20 @@ class User extends Authenticatable
 
     public function isAdmin(){
         return $this->role === "admin";
+    }
+
+    public function pharmacy(){
+        return $this->belongsTo(Pharmacy::class);
+    }
+
+    // Remplace le nom de la fonction
+    public function appNotifications()
+    {
+        return $this->hasMany(Notification::class);
+    }
+
+    public function reviews() {
+        return $this->hasMany(Review::class);
     }
 
 }
