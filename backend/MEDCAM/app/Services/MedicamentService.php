@@ -13,7 +13,7 @@ class MedicamentService
         $operator = DB::connection()->getDriverName() === 'pgsql' ? 'ILIKE' : 'LIKE';
 
         $requete = Medicament::query()
-            ->with('category')
+            ->with('category', 'stocks') // On charge les relations nécessaires pour éviter les N+1
             ->where(function($q) use ($query, $operator) { // <-- N'oublie pas d'ajouter $operator ici
 
                 // 2. On utilise la variable $operator au lieu d'écrire 'ILIKE' en dur

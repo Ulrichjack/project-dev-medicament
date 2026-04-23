@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\OrderResource; // <-- IMPORT
+use App\Http\Resources\StockResource; // <-- IMPORT
 use App\Services\PharmacistService;
 use App\Traits\ApiResponse;
 use Illuminate\Http\Request;
@@ -16,10 +18,7 @@ class PharmacistController extends Controller
 
     public function getOrders(Request $request): JsonResponse
     {
-        // Pour l'instant on force l'ID 1.
-        // Plus tard, on liera le pharmacien connecté à sa pharmacie dans la BDD.
         $pharmacist = $request->user();
-
         $pharmacy = $pharmacist->pharmacy;
 
         if (!$pharmacy) {
@@ -27,26 +26,37 @@ class PharmacistController extends Controller
         }
 
         $orders = $this->pharmacistService->getPharmacyOrders($pharmacy->id);
-        return $this->successResponse($orders, 'Commandes à traiter', 200);
+
+        // ON UTILISE ORDER RESOURCE ICI
+        return $this->successResponse(
+            OrderResource::collection($orders),
+            'Commandes à traiter',
+            200
+        );
     }
 
-
-    public function addStock(Request $request){
+    public function addStock(Request $request)
+    {
         $stockItem = $this->pharmacistService->addMedicamentToStock($request->all(), $request->user());
-        return $this->successResponse($stockItem, 'Médicament ajouté au stock', 201);
+
+        // ON UTILISE STOCK RESOURCE ICI
+        return $this->successResponse(new StockResource($stockItem), 'Médicament ajouté au stock', 201);
     }
 
-    public function updateStock(Request $request, int $stockId){
+    public function updateStock(Request $request, int $stockId)
+    {
         $updatedItem = $this->pharmacistService->updateStockItem($stockId, $request->all(), $request->user());
-        return $this->successResponse($updatedItem, 'Stock mis à jour', 200);
+
+        // ON UTILISE STOCK RESOURCE ICI
+        return $this->successResponse(new StockResource($updatedItem), 'Stock mis à jour', 200);
     }
 
-    public function updateOrderStatus(Request $request, int $orderId){
+    public function updateOrderStatus(Request $request, int $orderId)
+    {
         $newStatus = $request->input('status');
         $updatedOrder = $this->pharmacistService->updateOrderStatus($orderId, $newStatus, $request->user());
-        return $this->successResponse($updatedOrder, 'Statut de la commande mis à jour', 200);
+
+        // ON UTILISE ORDER RESOURCE ICI
+        return $this->successResponse(new OrderResource($updatedOrder), 'Statut de la commande mis à jour', 200);
     }
-
-
-
 }

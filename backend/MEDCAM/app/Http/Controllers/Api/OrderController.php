@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\OrderResource;
 use App\Services\OrderService;
 use App\Traits\ApiResponse;
 use Illuminate\Http\JsonResponse;
@@ -28,8 +29,7 @@ class OrderController extends Controller
         try {
             // On passe les données et l'utilisateur connecté (grâce au token Sanctum)
             $order = $this->orderService->createOrder($request->all(), $request->user());
-            return $this->successResponse($order, 'Commande créée avec succès', 201);
-        } catch (\Exception $e) {
+return $this->successResponse(new OrderResource($order), 'Commande créée avec succès', 201);        } catch (\Exception $e) {
             return $this->errorResponse($e->getMessage(), 400);
         }
     }
@@ -37,14 +37,20 @@ class OrderController extends Controller
     public function index(Request $request):JsonResponse
     {
         $orders = $this->orderService->getUserOrders($request->user());
-        return $this->successResponse($orders, 'Historique des commandes', 200);
+        return $this->successResponse(
+            OrderResource::collection($orders),
+            'Liste des commandes de l\'utilisateur',
+        );
     }
 
     public function show(Request $request, int $id): JsonResponse
     {
         try {
             $order = $this->orderService->getOrderById($id, $request->user());
-            return $this->successResponse($order, 'Détails de la commande', 200);
+            return $this->successResponse(
+                new OrderResource($order),
+                'Détails de la commande n°' . $id
+            );
         } catch (\Exception $e) {
             return $this->errorResponse("Commande introuvable", 404);
         }
@@ -54,8 +60,7 @@ class OrderController extends Controller
     {
         try {
             $order = $this->orderService->cancelOrder($id, $request->user());
-            return $this->successResponse($order, 'Commande annulée avec succès', 200);
-        } catch (\Exception $e) {
+return $this->successResponse(new OrderResource($order), 'Commande annulée avec succès', 200);        } catch (\Exception $e) {
             return $this->errorResponse($e->getMessage(), 400);
         }
     }
