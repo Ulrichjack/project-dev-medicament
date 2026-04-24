@@ -7,23 +7,17 @@ use Illuminate\Http\Resources\Json\JsonResource;
 
 class MedicamentResource extends JsonResource
 {
-    /**
-     * Transform the resource into an array.
-     *
-     * @return array<string, mixed>
-     */
     public function toArray($request): array
     {
         return [
             'id' => $this->id,
-            'nom' => $this->name,
-            'substance' => $this->active_substance,
+            'name' => $this->name,
+            'active_substance' => $this->active_substance,
             'description' => $this->description,
-            // On renvoie le nom de la catégorie, ou "Générique" si c'est vide
-            'categorie' => $this->category->name ?? 'Générique',
-            'prix_moyen' => $this->stocks->avg('price'),
-            'ordonnance' => $this->prescription_required,
-            'image' => $this->photo_url,
+            'category_name' => $this->category->name ?? 'Generic',
+            'price_min' => $this->stocks->min('price') ?? 0,
+            'prescription_required' => (bool) $this->prescription_required,
+            'photo_url' => $this->photo_url,
         ];
     }
 }
