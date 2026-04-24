@@ -11,26 +11,23 @@ class PharmacyResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'nom' => $this->name,
-            'adresse'=> $this->address,
+            'name' => $this->name,
+            'address'=> $this->address,
             'email' => $this->email,
-            'telephone' => $this->phone,
-            'gps' => [
-                'lng' => $this->longitude,
-                'lat' => $this->latitude,
-            ],
-            'est_ouverte' => (bool) $this->is_open,
-            'note' => $this->rating,
-
-            // On crée un tableau de produits proprement
-            'produits' => $this->whenLoaded('stocks', function() {
+            'phone' => $this->phone,
+            'latitude' => $this->latitude,
+            'longitude' => $this->longitude,
+            'is_open' => (bool) $this->is_open,
+            'rating' => $this->rating,
+            // Liste des produits si la relation est chargée
+            'products' => $this->whenLoaded('stocks', function() {
                 return $this->stocks->map(function($stock) {
                     return [
                         'stock_id' => $stock->id,
-                        'nom' => $stock->medicament->name,
-                        'prix' => $stock->price,
-                        'quantite' => $stock->quantity,
-                        'disponible' => $stock->is_available
+                        'name' => $stock->medicament->name,
+                        'price' => $stock->price,
+                        'quantity' => $stock->quantity,
+                        'is_available' => $stock->is_available
                     ];
                 });
             }),
