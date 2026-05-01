@@ -11,8 +11,8 @@ const api = axios.create({
 // Ajoute automatiquement le token à chaque requête
 api.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem('token')
-    if (token) {
+    const token = localStorage.getItem('medcam_token')
+        if (token) {
       config.headers.Authorization = `Bearer ${token}`
     }
     return config
@@ -26,8 +26,8 @@ api.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response?.status === 401) {
-      localStorage.removeItem('token')
-      localStorage.removeItem('user')
+      localStorage.removeItem('medcam_token')
+      localStorage.removeItem('medcam_user')
       window.location.href = '/login'
     }
     return Promise.reject(error)
