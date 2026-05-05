@@ -11,7 +11,7 @@ import {
 } from '../../store/cartSlice';
 import CartItem from '../../components/order/CartItem';
 
-const DELIVERY_FEE = 500;
+const DELIVERY_FEE = 1000;
 const fmt = (n) => n.toLocaleString('fr-FR') + ' FCFA';
 
 export default function CartPage() {
