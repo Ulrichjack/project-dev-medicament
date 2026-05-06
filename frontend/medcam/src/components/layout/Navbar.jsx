@@ -14,7 +14,7 @@ export default function Navbar() {
         {/* 1. Logo à gauche */}
         <Link to="/" className="text-[#2C5F8D] font-bold text-2xl flex items-center gap-2">
           <i className="fa-solid fa-notes-medical"></i>
-          PharmApp
+          MEDCAM
         </Link>
 
         {/* 2. Menu à droite */}

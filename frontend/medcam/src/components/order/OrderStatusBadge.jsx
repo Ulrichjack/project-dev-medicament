@@ -13,7 +13,7 @@ const STATUS_CONFIG = {
 export default function OrderStatusBadge({ status }) {
   const config = STATUS_CONFIG[status] || STATUS_CONFIG.pending;
   
-  // On garde l'animation d'Ange pour les statuts en cours
+  // On garde l'animation pour les statuts en cours
   const isPulsing = status === 'preparing' || status === 'shipped';
 
   return (

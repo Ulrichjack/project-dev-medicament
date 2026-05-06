@@ -6,9 +6,9 @@ import toastReducer from './toastSlice';
 
 export const store = configureStore({
   reducer: {
-    auth: authReducer, // Nécessaire pour PrivateRoute et la connexion
-    cart: cartReducer, // Nécessaire pour le panier
-    toast: toastReducer, // Nécessaire pour les notifications
+    auth: authReducer, 
+    cart: cartReducer, 
+    toast: toastReducer, 
   },
 });
 

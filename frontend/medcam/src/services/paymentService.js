@@ -6,7 +6,11 @@ const paymentService = {
       method,
       phone_number: phoneNumber,
     });
-    return res.data.data;
+    return res.data.data || res.data;
+  },
+  async getPaymentStatus(orderId) {
+    const res = await api.get(`/payments/${orderId}/status`);
+    return res.data.data || res.data;
   },
 };
 export default paymentService;
