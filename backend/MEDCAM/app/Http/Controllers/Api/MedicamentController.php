@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\MedicamentResource;
 use App\Services\MedicamentService;
 use App\Traits\ApiResponse;
 use Illuminate\Http\JsonResponse;
@@ -24,7 +25,10 @@ class MedicamentController extends Controller
 
         $result = $this->medicamentService->search($query, $filters);
 
-        return $this->successResponse($result, 'Recherche réussie', 200);
+        return $this->successResponse(
+            MedicamentResource::collection($result),
+            'Médicaments trouvés'
+        );
     }
 
     public function pharmacies(Request $request, int $id)

@@ -1,47 +1,25 @@
-// src/components/order/OrderStatusBadge.jsx
 import React from 'react';
 
-const STATUS_MAP = {
-<<<<<<< Updated upstream
-  pending:   { label: 'En attente',      dot: 'bg-slate-400',  badge: 'bg-slate-100 text-slate-600' },
-  confirmed: { label: 'Confirmée',       dot: 'bg-blue-500',   badge: 'bg-blue-100 text-blue-800' },
-  preparing: { label: 'En préparation',  dot: 'bg-amber-500',  badge: 'bg-amber-100 text-amber-700' },
-  ready:     { label: 'Prête',           dot: 'bg-yellow-500', badge: 'bg-yellow-100 text-yellow-700' },
-  shipped:   { label: 'Expédiée',        dot: 'bg-violet-500', badge: 'bg-violet-100 text-violet-700' },
-  delivered: { label: 'Livrée',          dot: 'bg-green-500',  badge: 'bg-green-100 text-green-700' },
-  cancelled: { label: 'Annulée',         dot: 'bg-red-400',    badge: 'bg-red-100 text-red-700' },
-=======
-  pending:   { label: 'En attente',      dot: 'bg-slate-400',   badge: 'bg-slate-100 text-slate-600' },
-  confirmed: { label: 'Confirmée',       dot: 'bg-blue-500',    badge: 'bg-blue-100 text-blue-800' },
-  preparing: { label: 'En préparation',  dot: 'bg-amber-500',   badge: 'bg-amber-100 text-amber-700' },
-  ready:     { label: 'Prête',           dot: 'bg-yellow-500',  badge: 'bg-yellow-100 text-yellow-700' },
-  shipped:   { label: 'Expédiée',        dot: 'bg-violet-500',  badge: 'bg-violet-100 text-violet-700' },
-  delivered: { label: 'Livrée',          dot: 'bg-green-500',   badge: 'bg-green-100 text-green-700' },
-  cancelled: { label: 'Annulée',         dot: 'bg-red-400',     badge: 'bg-red-100 text-red-700' },
->>>>>>> Stashed changes
+const STATUS_CONFIG = {
+  pending:   { label: 'En attente',      bg: 'bg-slate-100',  text: 'text-slate-600',  dot: 'bg-slate-400' },
+  confirmed: { label: 'Confirmée',       bg: 'bg-blue-100',   text: 'text-blue-800',   dot: 'bg-blue-500' },
+  preparing: { label: 'En préparation',  bg: 'bg-amber-100',  text: 'text-amber-700',  dot: 'bg-amber-500' },
+  ready:     { label: 'Prête',           bg: 'bg-yellow-100', text: 'text-yellow-700', dot: 'bg-yellow-500' },
+  shipped:   { label: 'Expédiée',        bg: 'bg-violet-100', text: 'text-violet-700', dot: 'bg-violet-500' },
+  delivered: { label: 'Livrée',          bg: 'bg-green-100',  text: 'text-green-700',  dot: 'bg-green-500' },
+  cancelled: { label: 'Annulée',         bg: 'bg-red-100',    text: 'text-red-700',    dot: 'bg-red-400' },
 };
 
-const OrderStatusBadge = ({ status }) => {
-  const config = STATUS_MAP[status] || STATUS_MAP.pending;
-<<<<<<< Updated upstream
-  return (
-    <span className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold ${config.badge}`}>
-      <span className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${config.dot} ${status === 'preparing' || status === 'shipped' ? 'animate-pulse' : ''}`} />
-=======
+export default function OrderStatusBadge({ status }) {
+  const config = STATUS_CONFIG[status] || STATUS_CONFIG.pending;
+  
+  // On garde l'animation d'Ange pour les statuts en cours
+  const isPulsing = status === 'preparing' || status === 'shipped';
 
   return (
-    <span className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold ${config.badge}`}>
-      <span className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${config.dot} ${
-        status === 'preparing' || status === 'shipped' ? 'animate-pulse' : ''
-      }`} />
->>>>>>> Stashed changes
+    <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold ${config.bg} ${config.text}`}>
+      <span className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${config.dot} ${isPulsing ? 'animate-pulse' : ''}`} />
       {config.label}
     </span>
   );
-};
-<<<<<<< Updated upstream
-export default OrderStatusBadge;
-=======
-
-export default OrderStatusBadge;
->>>>>>> Stashed changes
+}

@@ -14,7 +14,14 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware): void {
         //
+        $middleware->statefulApi();
+
+        // On donne le petit nom "role" à notre vigile
+        $middleware->alias([
+            'role' => \App\Http\Middleware\CheckRole::class,
+        ]);
     })
+
     ->withExceptions(function (Exceptions $exceptions): void {
         //
         $exceptions->shouldRenderJsonWhen(function (Request $request) {

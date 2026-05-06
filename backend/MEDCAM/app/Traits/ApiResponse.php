@@ -16,7 +16,7 @@ trait ApiResponse
             'success' => true,
             'message' => $message,
             'data' => $data
-        ], $code, [], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+        ], $code);
 
     }
 
@@ -29,7 +29,7 @@ trait ApiResponse
             'success' => false,
             'message' => $message,
             'errors'  => $errors
-        ], $code, [], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+        ], $code);
 
     }
 
