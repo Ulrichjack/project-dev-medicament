@@ -1,9 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import medicamentService from '../../services/medicamentService';
-import MedicamentCard from '../../components/medicament/PharmacyCard';
-import MedicamentCard from "../../components/PharmacyCard"; 
-// Enlève "/medicament/" si le fichier est directement dans components
+import MedicamentCard from '../../components/medicament/MedicamentCard';
+
+const CATEGORIES = [
+  { id: 1, name: 'Tous', icon: 'fa-house' },
+  { id: 2, name: 'Antidouleurs', icon: 'fa-pills' },
+  { id: 3, name: 'Antibiotiques', icon: 'fa-virus' },
+  { id: 4, name: 'Vitamines', icon: 'fa-apple-whole' },
+  { id: 5, name: 'Dermatologie', icon: 'fa-hand-dots' }
+];
+
 const HomePage = () => {
   const [query, setQuery] = useState('');
   const [popularMeds, setPopularMeds] = useState([]);
@@ -13,8 +20,8 @@ const HomePage = () => {
   useEffect(() => {
     const fetchPopular = async () => {
       try {
-        const data = await medicamentService.getAll();
-        setPopularMeds(data.slice(0, 8)); // On prend les 8 premiers
+        const data = await medicamentService.getAll(1);
+        setPopularMeds(data.slice(0, 6));
       } catch (err) {
         console.error(err);
       } finally {
@@ -22,6 +29,14 @@ const HomePage = () => {
       }
     };
     fetchPopular();
+    
+    // Demander la géolocalisation
+    if ("geolocation" in navigator) {
+      navigator.geolocation.getCurrentPosition((pos) => {
+        localStorage.setItem('user_lat', pos.coords.latitude);
+        localStorage.setItem('user_lng', pos.coords.longitude);
+      });
+    }
   }, []);
 
   const handleSearch = (e) => {
@@ -30,63 +45,70 @@ const HomePage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-white">
-      {/* SECTION HERO */}
-      <section className="bg-gradient-to-br from-[#1E3A8A] to-[#38BDF8] pt-20 pb-32 px-4 relative overflow-hidden">
-        {/* Cercles décoratifs */}
-        <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full -mr-20 -mt-20"></div>
+    <div className="min-h-screen bg-gray-50 pb-10">
+      {/* HERO SECTION */}
+      <div className="bg-gradient-to-br from-[#1E3A8A] to-[#38BDF8] p-12 text-center text-white rounded-b-[50px] shadow-xl">
+        <div className="flex justify-center mb-6">
+          <img src="/logo.png" alt="MEDCAM" className="h-14 brightness-0 invert" />
+        </div>
+        <h1 className="text-4xl md:text-5xl font-montserrat font-extrabold mb-4">
+          La pharmacie à portée de main
+        </h1>
         
-        <div className="max-w-4xl mx-auto text-center relative z-10">
-          <img src="/logo.png" alt="MEDCAM" className="h-16 mx-auto mb-6 brightness-0 invert" />
-          <h1 className="font-montserrat font-bold text-3xl md:text-5xl text-white mb-4">
-            La pharmacie à portée de main
-          </h1>
-          <p className="text-blue-100 mb-10 font-inter">Commandez vos médicaments et faites-vous livrer partout au Cameroun.</p>
+        <form onSubmit={handleSearch} className="max-w-xl mx-auto relative mt-8">
+          <input 
+            className="w-full p-5 pl-14 rounded-2xl text-black shadow-2xl outline-none focus:ring-4 ring-[#4ADE80]/50 transition-all font-inter"
+            placeholder="Rechercher un médicament (ex: Paracétamol...)"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+          />
+          <i className="fa-solid fa-magnifying-glass absolute left-5 top-1/2 -translate-y-1/2 text-gray-400 text-xl"></i>
+          <button type="submit" className="absolute right-3 top-1/2 -translate-y-1/2 bg-[#1E3A8A] text-white px-6 py-2.5 rounded-xl font-bold hover:bg-[#1E293B]">
+            Trouver
+          </button>
+        </form>
+      </div>
 
-          {/* Barre de recherche style Furyroad */}
-          <form onSubmit={handleSearch} className="max-w-2xl mx-auto flex p-2 bg-white rounded-2xl shadow-2xl">
-            <div className="flex-grow flex items-center px-4">
-              <i className="fa-solid fa-magnifying-glass text-slate-400 mr-3"></i>
-              <input 
-                type="text" 
-                className="w-full py-3 focus:outline-none text-slate-700"
-                placeholder="Rechercher un médicament (ex: Paracétamol...)"
-                value={query}
-                onChange={(e) => setQuery(e.target.value)}
-              />
-            </div>
-            <button type="submit" className="bg-[#1E3A8A] hover:bg-blue-800 text-white px-8 py-3 rounded-xl font-bold transition-colors">
-              Trouver
+      {/* CATEGORIES SECTION */}
+      <div className="max-w-6xl mx-auto px-6 mt-10">
+        <h2 className="text-xl font-montserrat font-bold text-[#1E3A8A] mb-6">Catégories</h2>
+        <div className="flex gap-4 overflow-x-auto pb-4 scrollbar-hide">
+          {CATEGORIES.map(cat => (
+            <button 
+              key={cat.id}
+              onClick={() => navigate(`/search?category_id=${cat.id}`)}
+              className="flex-shrink-0 flex items-center gap-3 bg-white px-6 py-4 rounded-2xl border border-slate-100 hover:border-[#38BDF8] hover:shadow-md transition-all group"
+            >
+              <i className={`fa-solid ${cat.icon} text-slate-300 group-hover:text-[#38BDF8]`}></i>
+              <span className="font-semibold text-slate-600 font-inter">{cat.name}</span>
             </button>
-          </form>
+          ))}
         </div>
-      </section>
+      </div>
 
-      {/* SECTION MÉDICAMENTS POPULAIRES */}
-      <section className="max-w-7xl mx-auto px-4 -mt-12 pb-20 relative z-20">
-        <div className="bg-white rounded-3xl shadow-sm border border-slate-100 p-8">
-          <div className="flex justify-between items-center mb-8">
-            <h2 className="font-montserrat font-bold text-xl text-[#1E293B]">Médicaments populaires</h2>
-            <button onClick={() => navigate('/search')} className="text-[#38BDF8] font-semibold text-sm hover:underline">
-              Voir tout <i className="fa-solid fa-arrow-right ml-1"></i>
-            </button>
+      {/* POPULAR SECTION */}
+      <div className="max-w-6xl mx-auto px-6 mt-10">
+        <div className="flex justify-between items-center mb-6">
+          <h2 className="text-xl font-montserrat font-bold text-[#1E3A8A]">Médicaments Populaires</h2>
+          <button onClick={() => navigate('/search')} className="text-[#38BDF8] font-bold text-sm">Voir tout →</button>
+        </div>
+
+        {loading ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 animate-pulse">
+            {[1,2,3].map(i => <div key={i} className="h-64 bg-slate-200 rounded-2xl"></div>)}
           </div>
-
-          {loading ? (
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-              {[1, 2, 3, 4].map(n => (
-                <div key={n} className="h-64 bg-slate-100 animate-pulse rounded-2xl"></div>
-              ))}
-            </div>
-          ) : (
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-              {popularMeds.map(med => (
-                <MedicamentCard key={med.id} medicament={med} />
-              ))}
-            </div>
-          )}
-        </div>
-      </section>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+            {popularMeds.map(med => (
+              <MedicamentCard 
+                key={med.id} 
+                medicament={med} 
+                onClick={() => navigate(`/medicaments/${med.id}`)} 
+              />
+            ))}
+          </div>
+        )}
+      </div>
     </div>
   );
 };
