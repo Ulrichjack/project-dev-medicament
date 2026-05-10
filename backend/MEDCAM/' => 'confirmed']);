@@ -1,0 +1,18 @@
+[90m= [39m[34;4mApp\Models\Order[39;24m {#8192
+    [34mid[39m: [35m2[39m,
+    [34muser_id[39m: [35m1[39m,
+    [34mpharmacy_id[39m: [35m1[39m,
+    [34mtotal_amount[39m: [32m"[39m[32m5000.00[39m[32m"[39m,
+    [34mdelivery_fee[39m: [32m"[39m[32m1000.00[39m[32m"[39m,
+    [34mtax_amount[39m: [32m"[39m[32m0.00[39m[32m"[39m,
+    [34mdiscount_code[39m: [36mnull[39m,
+    [34mstatus[39m: [32m"[39m[32mdelivered[39m[32m"[39m,
+    [34mdelivery_address[39m: [32m"[39m[32mDouala Akwa[39m[32m"[39m,
+    [34mdelivery_latitude[39m: [36mnull[39m,
+    [34mdelivery_longitude[39m: [36mnull[39m,
+    [34mnotes[39m: [36mnull[39m,
+    [34mdelivered_at[39m: [36mnull[39m,
+    [34mdeleted_at[39m: [36mnull[39m,
+    [34mcreated_at[39m: [32m"[39m[32m2026-04-23 18:10:13[39m[32m"[39m,
+    [34mupdated_at[39m: [32m"[39m[32m2026-04-23 18:10:13[39m[32m"[39m,
+  }
