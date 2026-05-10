@@ -9,18 +9,16 @@ class UserSeeder extends Seeder
 {
     public function run(): void
     {
-        // On crée un client de test
-        User::firstOrCreate(['email' => 'client@test.com'], [
+        User::firstOrCreate(['email' => 'client@medcam.cm'], [
             'name' => 'Client Test',
-            'password' => Hash::make('password123'),
+            'password' => Hash::make('password'),
             'role' => 'client',
         ]);
 
-        // On crée un pharmacien de test
-        User::firstOrCreate(['email' => 'pharmacien@test.com'], [
-            'name' => 'Pharmacien Test',
-            'password' => Hash::make('password123'),
-            'role' => 'pharmacien',
+        User::firstOrCreate(['email' => 'admin@medcam.cm'], [
+            'name' => 'Admin Medcam',
+            'password' => Hash::make('password'),
+            'role' => 'admin',
         ]);
     }
 }

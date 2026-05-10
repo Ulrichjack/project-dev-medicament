@@ -1,83 +1,82 @@
 import { createSlice } from '@reduxjs/toolkit';
 
-const initialState = {
-  items: [],
-  pharmacyId: null,
-  pharmacyName: '',
+// --- FONCTIONS POUR LIRE/SAUVEGARDER DANS LE NAVIGATEUR ---
+const loadState = () => {
+  try {
+    const items = localStorage.getItem('medcam_cart_items');
+    const pharmacy = localStorage.getItem('medcam_cart_pharmacy');
+    return {
+      items: items ? JSON.parse(items) : [],
+      pharmacyId: pharmacy ? JSON.parse(pharmacy).id : null,
+      pharmacyName: pharmacy ? JSON.parse(pharmacy).name : null,
+    };
+  } catch (err) {
+    return { items: [], pharmacyId: null, pharmacyName: null };
+  }
 };
 
-const cartSlice = createSlice({
+const saveState = (state) => {
+  localStorage.setItem('medcam_cart_items', JSON.stringify(state.items));
+  localStorage.setItem('medcam_cart_pharmacy', JSON.stringify({
+    id: state.pharmacyId,
+    name: state.pharmacyName
+  }));
+};
+
+const initialState = loadState();
+
+export const cartSlice = createSlice({
   name: 'cart',
   initialState,
   reducers: {
-    addItem(state, action) {
-      const newItem = action.payload;
-      if (state.pharmacyId && state.pharmacyId !== newItem.pharmacyId) {
-        state.items = [];
-        state.pharmacyId = newItem.pharmacyId;
-        state.pharmacyName = newItem.pharmacyName;
-      }
-      if (!state.pharmacyId) {
-        state.pharmacyId = newItem.pharmacyId;
-        state.pharmacyName = newItem.pharmacyName;
-      }
-      const existing = state.items.find(item => item.medicamentId === newItem.medicamentId);
-      if (existing) {
-        existing.quantity += newItem.quantity || 1;
+    addItem: (state, action) => {
+      const { medicamentId, pharmacyId, pharmacyName, quantity } = action.payload;
+
+     
+      
+
+      state.pharmacyId = pharmacyId;
+      state.pharmacyName = pharmacyName;
+
+      const existingItem = state.items.find(item => item.medicamentId === medicamentId);
+      if (existingItem) {
+        existingItem.quantity += quantity;
       } else {
-        state.items.push({
-          medicamentId: newItem.medicamentId,
-          medicamentName: newItem.medicamentName,
-          photo_url: newItem.photo_url || null,
-          pharmacyId: newItem.pharmacyId,
-          pharmacyName: newItem.pharmacyName,
-          price: newItem.price,
-          quantity: newItem.quantity || 1,
-        });
+        state.items.push(action.payload);
       }
+      
+      saveState(state); // On sauvegarde !
     },
-    removeItem(state, action) {
-      const medicamentId = action.payload;
-      state.items = state.items.filter(item => item.medicamentId !== medicamentId);
-      if (state.items.length === 0) {
-        state.pharmacyId = null;
-        state.pharmacyName = '';
-      }
-    },
-    updateQuantity(state, action) {
+    updateQuantity: (state, action) => {
       const { medicamentId, quantity } = action.payload;
-      if (quantity <= 0) {
-        state.items = state.items.filter(item => item.medicamentId !== medicamentId);
-        if (state.items.length === 0) {
-          state.pharmacyId = null;
-          state.pharmacyName = '';
-        }
-        return;
-      }
       const item = state.items.find(item => item.medicamentId === medicamentId);
-      if (item) {
+      if (item && quantity > 0) {
         item.quantity = quantity;
       }
+      saveState(state);
     },
-    clearCart(state) {
+    removeItem: (state, action) => {
+      state.items = state.items.filter(item => item.medicamentId !== action.payload);
+      if (state.items.length === 0) {
+        state.pharmacyId = null;
+        state.pharmacyName = null;
+      }
+      saveState(state);
+    },
+    clearCart: (state) => {
       state.items = [];
       state.pharmacyId = null;
-      state.pharmacyName = '';
-    }
+      state.pharmacyName = null;
+      saveState(state);
+    },
   },
 });
 
-// 1. On exporte les Actions pour modifier le panier
-export const { addItem, removeItem, updateQuantity, clearCart } = cartSlice.actions;
+export const { addItem, updateQuantity, removeItem, clearCart } = cartSlice.actions;
 
-// 2. On exporte les Selectors pour lire le panier (C'EST ÇA QUI MANQUAIT !)
 export const selectCartItems = (state) => state.cart.items;
-export const selectCartTotal = (state) => state.cart.items.reduce((total, item) => total + item.price * item.quantity, 0);
-export const selectCartCount = (state) => state.cart.items.reduce((count, item) => count + item.quantity, 0);
-export const selectCartPharmacy = (state) => ({
-  pharmacyId: state.cart.pharmacyId,
-  pharmacyName: state.cart.pharmacyName,
-});
+export const selectCartCount = (state) => state.cart.items.reduce((total, item) => total + item.quantity, 0);
+export const selectCartTotal = (state) => state.cart.items.reduce((total, item) => total + (item.price * item.quantity), 0);
+export const selectCartPharmacy = (state) => state.cart;
 
-// 3. On exporte le reducer par défaut
 export default cartSlice.reducer;

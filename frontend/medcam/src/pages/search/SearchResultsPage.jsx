@@ -5,7 +5,9 @@ import MedicamentCard from '../../components/medicament/MedicamentCard';
 
 const SearchResultsPage = () => {
   const [searchParams] = useSearchParams();
-  const query = searchParams.get('q'); // Récupère le texte cherché
+  const query = searchParams.get('q') || ''; 
+  const categoryId = searchParams.get('category_id'); // <-- On récupère la catégorie !
+  
   const [results, setResults] = useState([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
@@ -14,10 +16,9 @@ const SearchResultsPage = () => {
     const fetchResults = async () => {
       setLoading(true);
       try {
-        if (query) {
-          const data = await medicamentService.search(query);
-          setResults(data);
-        }
+        // On passe les deux : la recherche texte ET la catégorie
+        const data = await medicamentService.search(query, { category_id: categoryId });
+        setResults(data);
       } catch (err) {
         console.error("Erreur recherche:", err);
       } finally {
@@ -25,32 +26,33 @@ const SearchResultsPage = () => {
       }
     };
     fetchResults();
-  }, [query]);
+  }, [query, categoryId]);
 
   return (
     <div className="min-h-screen bg-gray-50 p-6 md:p-12">
       <div className="max-w-6xl mx-auto">
         <button 
           onClick={() => navigate('/')}
-          className="flex items-center gap-2 text-[#1E3A8A] font-medium mb-8 hover:underline"
+          className="flex items-center gap-2 text-[#1E3A8A] font-bold mb-8 hover:translate-x-[-4px] transition-transform"
         >
-          ← Retour à l'accueil
+          <i className="fa-solid fa-arrow-left"></i> Retour à l'accueil
         </button>
 
         <h1 className="text-3xl font-montserrat font-bold text-[#1E3A8A] mb-2">
-          Résultats pour "{query}"
+          {query ? `Résultats pour "${query}"` : categoryId ? `Résultats de la catégorie` : `Tous les médicaments`}
         </h1>
         <p className="text-gray-500 mb-8">{results.length} médicament(s) trouvé(s)</p>
 
         {loading ? (
-          <div className="text-center py-20 text-gray-400">Recherche en cours...</div>
+          <div className="text-center py-20 text-[#1E3A8A] font-bold animate-pulse">Recherche en cours...</div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
             {results.map(med => (
               <MedicamentCard 
                 key={med.id} 
                 medicament={med} 
-                onClick={() => navigate(`/medicament/${med.id}`)} 
+                // ATTENTION ICI: La route dans App.jsx est avec un "s" (medicaments)
+                onClick={() => navigate(`/medicaments/${med.id}`)} 
               />
             ))}
           </div>
@@ -58,7 +60,7 @@ const SearchResultsPage = () => {
 
         {!loading && results.length === 0 && (
           <div className="bg-white p-12 rounded-3xl text-center shadow-sm border border-gray-100">
-            <p className="text-gray-400 text-lg">Désolé, aucun médicament ne correspond à votre recherche.</p>
+            <p className="text-gray-400 text-lg">Aucun médicament ne correspond à votre recherche.</p>
           </div>
         )}
       </div>

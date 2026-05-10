@@ -39,7 +39,10 @@ class MedicamentSeeder extends Seeder
         ];
 
         foreach ($meds as $med) {
-            Medicament::create($med);
+            Medicament::firstOrCreate(
+                ['name' => $med['name']], // La clé unique pour la recherche
+                $med                      // Les données complètes pour la création
+            );
         }
     }
 }

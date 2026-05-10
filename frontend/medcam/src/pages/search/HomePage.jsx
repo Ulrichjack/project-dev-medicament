@@ -4,33 +4,44 @@ import medicamentService from '../../services/medicamentService';
 import MedicamentCard from '../../components/medicament/MedicamentCard';
 
 const CATEGORIES = [
-  { id: 1, name: 'Tous', icon: 'fa-house' },
+  { id: null, name: 'Tous', icon: 'fa-house' },
   { id: 2, name: 'Antidouleurs', icon: 'fa-pills' },
-  { id: 3, name: 'Antibiotiques', icon: 'fa-virus' },
-  { id: 4, name: 'Vitamines', icon: 'fa-apple-whole' },
-  { id: 5, name: 'Dermatologie', icon: 'fa-hand-dots' }
+  { id: 1, name: 'Antibiotiques', icon: 'fa-virus' }, // Vérifie tes IDs de BDD
+  { id: 3, name: 'Vitamines', icon: 'fa-apple-whole' },
+  { id: 4, name: 'Cardio', icon: 'fa-heart-pulse' }
 ];
 
 const HomePage = () => {
   const [query, setQuery] = useState('');
-  const [popularMeds, setPopularMeds] = useState([]);
+  const [medicaments, setMedicaments] = useState([]); // Remplace popularMeds
   const [loading, setLoading] = useState(true);
+  const [isSearching, setIsSearching] = useState(false);
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const fetchPopular = async () => {
-      try {
+  // Charge les médicaments au démarrage (ou selon une catégorie)
+  const fetchMeds = async (searchQuery = '', categoryId = null) => {
+    setLoading(true);
+    try {
+      if (searchQuery || categoryId) {
+        setIsSearching(true);
+        const data = await medicamentService.search(searchQuery, { category_id: categoryId });
+        setMedicaments(data);
+      } else {
+        setIsSearching(false);
         const data = await medicamentService.getAll(1);
-        setPopularMeds(data.slice(0, 6));
-      } catch (err) {
-        console.error(err);
-      } finally {
-        setLoading(false);
+        setMedicaments(data.slice(0, 6)); // Affiche juste les 6 premiers par défaut
       }
-    };
-    fetchPopular();
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchMeds();
     
-    // Demander la géolocalisation
+    // Demander la géolocalisation pour le calcul de distance plus tard
     if ("geolocation" in navigator) {
       navigator.geolocation.getCurrentPosition((pos) => {
         localStorage.setItem('user_lat', pos.coords.latitude);
@@ -41,15 +52,20 @@ const HomePage = () => {
 
   const handleSearch = (e) => {
     e.preventDefault();
-    if (query.trim()) navigate(`/search?q=${query}`);
+    fetchMeds(query); // Cherche sans changer de page
+  };
+
+  const handleCategoryClick = (categoryId) => {
+    setQuery(''); // On vide le texte si on clique sur une catégorie
+    fetchMeds('', categoryId);
   };
 
   return (
     <div className="min-h-screen bg-gray-50 pb-10">
       {/* HERO SECTION */}
       <div className="bg-gradient-to-br from-[#1E3A8A] to-[#38BDF8] p-12 text-center text-white rounded-b-[50px] shadow-xl">
-        <div className="flex justify-center mb-6">
-          <img src="/logo.png" alt="MEDCAM" className="h-14 brightness-0 invert" />
+        <div className="flex justify-center mb-2">
+            <img src="/logo.svg" alt="MEDCAM" className="w-24 h-20 object-contain" />
         </div>
         <h1 className="text-4xl md:text-5xl font-montserrat font-extrabold mb-4">
           La pharmacie à portée de main
@@ -73,10 +89,10 @@ const HomePage = () => {
       <div className="max-w-6xl mx-auto px-6 mt-10">
         <h2 className="text-xl font-montserrat font-bold text-[#1E3A8A] mb-6">Catégories</h2>
         <div className="flex gap-4 overflow-x-auto pb-4 scrollbar-hide">
-          {CATEGORIES.map(cat => (
+          {CATEGORIES.map((cat, index) => (
             <button 
-              key={cat.id}
-              onClick={() => navigate(`/search?category_id=${cat.id}`)}
+              key={index}
+              onClick={() => handleCategoryClick(cat.id)}
               className="flex-shrink-0 flex items-center gap-3 bg-white px-6 py-4 rounded-2xl border border-slate-100 hover:border-[#38BDF8] hover:shadow-md transition-all group"
             >
               <i className={`fa-solid ${cat.icon} text-slate-300 group-hover:text-[#38BDF8]`}></i>
@@ -86,26 +102,37 @@ const HomePage = () => {
         </div>
       </div>
 
-      {/* POPULAR SECTION */}
+      {/* RÉSULTATS SECTION */}
       <div className="max-w-6xl mx-auto px-6 mt-10">
         <div className="flex justify-between items-center mb-6">
-          <h2 className="text-xl font-montserrat font-bold text-[#1E3A8A]">Médicaments Populaires</h2>
-          <button onClick={() => navigate('/search')} className="text-[#38BDF8] font-bold text-sm">Voir tout →</button>
+          <h2 className="text-xl font-montserrat font-bold text-[#1E3A8A]">
+            {isSearching ? `Résultats de recherche (${medicaments.length})` : 'Médicaments Populaires'}
+          </h2>
+          {isSearching && (
+             <button onClick={() => fetchMeds()} className="text-red-500 font-bold text-sm hover:underline">
+               X Annuler la recherche
+             </button>
+          )}
         </div>
 
         {loading ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 animate-pulse">
-            {[1,2,3].map(i => <div key={i} className="h-64 bg-slate-200 rounded-2xl"></div>)}
+            {[1,2,3,4,5,6].map(i => <div key={i} className="h-64 bg-slate-200 rounded-2xl"></div>)}
           </div>
-        ) : (
+        ) : medicaments.length > 0 ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-            {popularMeds.map(med => (
+            {medicaments.map(med => (
               <MedicamentCard 
                 key={med.id} 
                 medicament={med} 
+                // LA CORRECTION DU LIEN EST ICI :
                 onClick={() => navigate(`/medicaments/${med.id}`)} 
               />
             ))}
+          </div>
+        ) : (
+          <div className="bg-white p-12 rounded-3xl text-center shadow-sm border border-gray-100">
+            <p className="text-gray-400 text-lg">Aucun médicament trouvé.</p>
           </div>
         )}
       </div>

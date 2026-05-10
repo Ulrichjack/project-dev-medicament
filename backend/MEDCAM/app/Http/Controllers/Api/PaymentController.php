@@ -14,12 +14,17 @@ class PaymentController extends Controller
 
     public function __construct(protected PaymentService $paymentService) {}
 
-    public function simulate(Request $request, int $orderId)
+        public function simulate(Request $request, int $orderId)
     {
         try {
-            $order = $this->paymentService->simulatePayment($orderId, $request->user());
-            return $this->successResponse(new OrderResource($order), 'Paiement validé avec succès', 200);        } catch (\Exception $e) {
+            // On récupère la méthode choisie sur le Front (ex: orange_money)
+            $method = $request->input('method');
+            $order = $this->paymentService->simulatePayment($orderId, $request->user(), $method);
+            return $this->successResponse(new OrderResource($order), 'Paiement validé avec succès', 200);
+        } catch (\Exception $e) {
             return $this->errorResponse($e->getMessage(), 400);
         }
     }
+
+    
 }

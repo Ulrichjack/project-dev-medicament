@@ -34,6 +34,19 @@ class PharmacistController extends Controller
             200
         );
     }
+    // Dans app/Http/Controllers/Api/PharmacistController.php
+
+    public function getStock(Request $request)
+    {
+        $stockItems = $this->pharmacistService->getPharmacyStock($request->user());
+
+        // On utilise la StockResource qu'on a créée !
+        return $this->successResponse(
+            StockResource::collection($stockItems),
+            'Stock de la pharmacie récupéré'
+        );
+    }
+
 
     public function addStock(Request $request)
     {
@@ -58,5 +71,18 @@ class PharmacistController extends Controller
 
         // ON UTILISE ORDER RESOURCE ICI
         return $this->successResponse(new OrderResource($updatedOrder), 'Statut de la commande mis à jour', 200);
+    }
+
+
+    public function createMedicament(Request $request)
+    {
+        // Validation basique
+        $request->validate([
+            'name' => 'required|string|max:200',
+        ]);
+
+        $medicament = $this->pharmacistService->createNewMedicament($request->all());
+
+        return $this->successResponse($medicament, 'Nouveau médicament ajouté au catalogue', 201);
     }
 }

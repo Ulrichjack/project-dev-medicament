@@ -30,4 +30,10 @@ class Pharmacy extends Model
         return $this->hasMany(PharmacyStock::class);
     }
 
+    public function user()
+    {
+    // Une pharmacie appartient à un utilisateur (gérant)
+    return $this->belongsTo(User::class);
+    }
+
 }

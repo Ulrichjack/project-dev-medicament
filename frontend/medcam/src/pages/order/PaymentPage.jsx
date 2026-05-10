@@ -242,11 +242,12 @@ export default function PaymentPage() {
             <p className="text-xs text-slate-400 mb-8">Commande #{orderId}</p>
             <div className="space-y-3">
               <button
-                onClick={() => navigate(`/orders/${orderId}`)}
+                // On change la route ici pour l'envoyer vers la liste de ses commandes
+                onClick={() => navigate('/orders')} 
                 className="w-full bg-[#1E3A8A] text-white py-4 rounded-xl font-bold hover:bg-[#1e40af] transition-colors active:scale-[0.98] flex items-center justify-center gap-2 shadow-lg"
                 style={{ fontFamily: 'Montserrat, sans-serif' }}
               >
-                <i className="fa-solid fa-bag-shopping" /> Suivre ma commande
+                <i className="fa-solid fa-box-open" /> Voir mes commandes
               </button>
               <button
                 onClick={() => navigate('/')}

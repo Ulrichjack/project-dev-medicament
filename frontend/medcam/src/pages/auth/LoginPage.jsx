@@ -22,7 +22,11 @@ export default function LoginPage() {
     try {
       const { user, token } = await login(email, password);
       dispatch(setCredentials({ user, token }));
-      navigate('/');
+      if (user.role === 'pharmacien') {
+         navigate('/pharmacist/dashboard');
+      } else {
+         navigate('/');
+      }
     } catch (err) {
       setErrorMsg(typeof err === 'string' ? err : err?.message || 'Erreur de connexion');
     } finally {

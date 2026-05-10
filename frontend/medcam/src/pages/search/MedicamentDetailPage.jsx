@@ -1,11 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { useDispatch } from 'react-redux'; // <-- IMPORT REDUX
+import { addItem } from '../../store/cartSlice'; // <-- IMPORT ACTION PANIER
 import medicamentService from '../../services/medicamentService';
 import PharmacyCard from '../../components/medicament/PharmacyCard';
+import { addToast } from '../../store/toastSlice';
+import { selectCartPharmacy } from '../../store/cartSlice';
+import { useSelector } from 'react-redux';
 
 const MedicamentDetailPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const dispatch = useDispatch(); // <-- INITIALISATION REDUX
+  
   const [medicament, setMedicament] = useState(null);
   const [pharmacies, setPharmacies] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -14,18 +21,15 @@ const MedicamentDetailPage = () => {
     const loadData = async () => {
       setLoading(true);
       try {
-        // 1. Récupération des infos du médicament
         const med = await medicamentService.getById(id);
         setMedicament(med);
         
-        // 2. Récupération de la position stockée (si dispo) pour les pharmacies
         const lat = localStorage.getItem('user_lat');
         const lng = localStorage.getItem('user_lng');
-        
         const pharms = await medicamentService.getPharmacies(id, lat, lng);
         setPharmacies(pharms);
       } catch (err) {
-        console.error("Erreur lors du chargement des détails:", err);
+        console.error(err);
       } finally {
         setLoading(false);
       }
@@ -33,126 +37,87 @@ const MedicamentDetailPage = () => {
     loadData();
   }, [id]);
 
-  // Fonction pour gérer l'ajout au panier (Logique temporaire)
+  const currentCart = useSelector(selectCartPharmacy);
+
+  // LA VRAIE LOGIQUE DU PANIER (SÉCURISÉE AVEC TOAST)
   const onOrder = (stock) => {
-    const cartItem = {
-      medId: id,
-      name: medicament.name,
-      price: stock.price,
-      pharmacyName: stock.pharmacy.name,
-      qty: 1
-    };
+    const pName = stock?.pharmacy?.name || stock?.name || 'Pharmacie';
+    const pId = stock?.pharmacy?.id || stock?.id || 1;
+    const pPrice = stock?.price || stock?.pivot?.price || stock?.unit_price || 0;
+
+    // VÉRIFICATION : Est-ce qu'on change de pharmacie ?
+    if (currentCart.pharmacyId && currentCart.pharmacyId !== pId && currentCart.items.length > 0) {
+      dispatch(addToast({ 
+        type: 'error', 
+        message: "Action impossible. Videz d'abord votre panier pour changer de pharmacie !" 
+      }));
+      return; // On bloque l'ajout !
+    }
+
+    dispatch(addItem({
+      medicamentId: medicament.id,
+      medicamentName: medicament.name,
+      photo_url: medicament.photo_url,
+      pharmacyId: pId,        
+      pharmacyName: pName,    
+      price: pPrice,          
+      quantity: 1
+    }));
     
-    // Sauvegarde locale pour le module d'Ange
-    const cart = JSON.parse(localStorage.getItem('temp_cart') || '[]');
-    cart.push(cartItem);
-    localStorage.setItem('temp_cart', JSON.stringify(cart));
-    
-    alert(`✅ ${medicament.name} ajouté au panier !`);
+    dispatch(addToast({ type: 'success', message: `${medicament.name} ajouté au panier !` }));
   };
 
-  if (loading) {
-    return (
-      <div className="flex flex-col items-center justify-center min-h-screen">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#1E3A8A]"></div>
-        <p className="mt-4 text-[#1E3A8A] font-bold font-montserrat">Chargement MEDCAM...</p>
-      </div>
-    );
-  }
 
-  if (!medicament) {
-    return (
-      <div className="p-20 text-center font-inter">
-        <h2 className="text-2xl font-bold text-slate-800">Médicament introuvable</h2>
-        <button onClick={() => navigate('/')} className="mt-4 text-[#38BDF8] font-bold underline">
-          Retour à l'accueil
-        </button>
-      </div>
-    );
-  }
+  if (loading) return <div className="p-20 text-center animate-pulse text-[#1E3A8A] font-bold">Chargement MEDCAM...</div>;
+  if (!medicament) return <div className="p-20 text-center font-bold">Produit introuvable.</div>;
 
   return (
     <div className="min-h-screen bg-gray-50 pb-20">
-      {/* HEADER DE LA PAGE */}
-      <div className="bg-white border-b border-slate-100 shadow-sm">
+      <div className="bg-white border-b border-slate-100">
         <div className="max-w-4xl mx-auto p-6">
-          {/* Bouton Retour fonctionnel */}
           <button 
             onClick={() => navigate(-1)} 
-            className="text-[#1E3A8A] font-bold flex items-center gap-2 mb-8 hover:translate-x-[-4px] transition-transform duration-200"
+            className="text-[#1E3A8A] font-bold flex items-center gap-2 mb-6 hover:translate-x-[-4px] transition-transform"
           >
-            <i className="fa-solid fa-arrow-left"></i> Retour aux résultats
+            <i className="fa-solid fa-arrow-left"></i> Retour
           </button>
 
-          <div className="flex flex-col md:flex-row gap-10 items-center md:items-start">
-            {/* Image du produit */}
-            <div className="w-full md:w-1/3 bg-[#F0F4FF] rounded-3xl aspect-square flex items-center justify-center p-6 shadow-inner">
-              <img 
-                src={medicament.photo_url || '/logo.png'} 
-                className="max-h-full object-contain drop-shadow-lg" 
-                alt={medicament.name} 
-              />
+          <div className="flex flex-col md:flex-row gap-10 items-start">
+            <div className="w-full md:w-1/3 bg-[#F0F4FF] rounded-3xl aspect-square flex items-center justify-center p-8">
+              <img src={medicament.photo_url || '/logo.svg'} className="max-h-full object-contain" alt={medicament.name} />
             </div>
             
-            {/* Infos principales */}
-            <div className="flex-1 text-center md:text-left">
-              <div className="flex flex-col md:flex-row items-center gap-3 mb-4">
-                <h1 className="text-4xl font-montserrat font-extrabold text-[#1E3A8A] capitalize">
-                  {medicament.name}
-                </h1>
+            <div className="flex-1">
+              <div className="flex items-center gap-3 mb-2">
+                <h1 className="text-4xl font-montserrat font-extrabold text-[#1E3A8A] capitalize">{medicament.name}</h1>
                 {medicament.prescription_required && (
-                  <span className="bg-red-100 text-red-600 text-[10px] px-3 py-1 rounded-full font-black border border-red-200 tracking-tighter">
-                    ORDONNANCE OBLIGATOIRE
-                  </span>
+                  <span className="bg-red-50 text-red-500 text-[10px] px-3 py-1 rounded-full font-bold border border-red-100 uppercase">ORDONNANCE</span>
                 )}
               </div>
-
-              <p className="text-slate-400 font-medium font-inter mb-4">
-                {medicament.active_substance || 'Substance active non précisée'} • {medicament.manufacturer || 'MEDCAM'}
-              </p>
-
-              <div className="bg-[#4ADE80]/10 text-[#4ADE80] inline-block px-6 py-2 rounded-2xl font-black text-2xl mb-8">
+              <p className="text-slate-400 font-medium mb-4">{medicament.active_substance} • {medicament.manufacturer}</p>
+              <div className="bg-[#4ADE80]/10 text-[#4ADE80] inline-block px-4 py-2 rounded-xl font-bold text-xl mb-6">
                 À partir de {medicament.price_min} FCFA
               </div>
-
-              <div className="border-t border-slate-100 pt-6">
-                <h3 className="font-bold text-[#1E3A8A] mb-3 uppercase text-xs tracking-widest">Indications</h3>
-                <p className="text-slate-600 leading-relaxed font-inter italic">
-                  {medicament.description || "Aucune description détaillée n'est disponible pour ce produit."}
-                </p>
-              </div>
+              <p className="text-slate-600 leading-relaxed font-inter">{medicament.description}</p>
             </div>
           </div>
         </div>
       </div>
 
-      {/* SECTION DES PHARMACIES DISPONIBLES */}
       <div className="max-w-4xl mx-auto p-6 mt-10">
-        <div className="flex items-center justify-between mb-8">
-          <h2 className="text-2xl font-montserrat font-bold text-[#1E3A8A] flex items-center gap-3">
-            <i className="fa-solid fa-map-location-dot text-[#38BDF8]"></i>
-            Pharmacies avec stock
-          </h2>
-          <span className="text-slate-400 text-sm font-medium">
-            {pharmacies.length} disponible(s)
-          </span>
-        </div>
+        <h2 className="text-2xl font-montserrat font-bold text-[#1E3A8A] mb-6 flex items-center gap-2">
+          <i className="fa-solid fa-map-location-dot text-[#38BDF8]"></i>
+          Pharmacies à proximité
+        </h2>
         
         <div className="space-y-4">
           {pharmacies.length > 0 ? (
-            pharmacies.map((item, index) => (
-              <PharmacyCard 
-                key={index} 
-                pharmacyStock={item} 
-                onOrder={() => onOrder(item)} 
-              />
+            pharmacies.map((item, idx) => (
+              <PharmacyCard key={idx} pharmacyStock={item} onOrder={() => onOrder(item)} />
             ))
           ) : (
-            <div className="bg-white p-12 rounded-[32px] text-center border-2 border-dashed border-slate-200">
-              <i className="fa-solid fa-store-slash text-4xl text-slate-200 mb-4"></i>
-              <p className="text-slate-500 font-medium font-inter">
-                Ce médicament n'est actuellement pas disponible dans les pharmacies partenaires proches de vous.
-              </p>
+            <div className="bg-white p-10 rounded-3xl text-center border-2 border-dashed border-slate-100">
+              <p className="text-slate-400 italic">Aucune pharmacie trouvée pour ce médicament.</p>
             </div>
           )}
         </div>

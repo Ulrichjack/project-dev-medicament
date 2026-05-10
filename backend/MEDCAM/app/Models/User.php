@@ -61,7 +61,7 @@ class User extends Authenticatable
     }
 
     public function pharmacy(){
-        return $this->belongsTo(Pharmacy::class);
+        return $this->hasOne(Pharmacy::class);
     }
 
     // Remplace le nom de la fonction
