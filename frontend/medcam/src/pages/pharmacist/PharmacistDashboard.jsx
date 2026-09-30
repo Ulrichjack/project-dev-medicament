@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import api from '../../services/api';
 import medicamentService from '../../services/medicamentService';
 import OrderStatusBadge from '../../components/order/OrderStatusBadge';
@@ -23,12 +23,7 @@ export default function PharmacistDashboard() {
   const [showNewMedModal, setShowNewMedModal] = useState(false);
   const [newMedForm, setNewMedForm] = useState({ name: '', active_substance: '', category_id: '', prescription_required: false });
 
-  useEffect(() => {
-    loadDashboardData();
-  }, []);
-
-  const loadDashboardData = async () => {
-    setLoading(true);
+  const loadDashboardData = useCallback(async () => {
     try {
       const resOrders = await api.get('/pharmacist/orders');
       setOrders(resOrders.data.data || resOrders.data || []); // Gère avec ou sans pagination
@@ -41,19 +36,23 @@ export default function PharmacistDashboard() {
 
       const resCats = await medicamentService.getCategories();
       setCategories(resCats);
-    } catch (err) {
+    } catch {
       dispatch(addToast({ type: 'error', message: "Erreur de chargement des données." }));
     } finally {
       setLoading(false);
     }
-  };
+  }, [dispatch]);
+
+  useEffect(() => {
+    Promise.resolve().then(loadDashboardData);
+  }, [loadDashboardData]);
 
   const updateStatus = async (orderId, newStatus) => {
     try {
       await api.patch(`/pharmacist/orders/${orderId}/status`, { status: newStatus });
       setOrders(orders.map(o => o.id === orderId ? { ...o, status: newStatus } : o));
       dispatch(addToast({ type: 'success', message: "Statut mis à jour !" }));
-    } catch (e) {
+    } catch {
       dispatch(addToast({ type: 'error', message: "Erreur lors de la mise à jour." }));
     }
   };
@@ -73,7 +72,7 @@ export default function PharmacistDashboard() {
       }
       cancelEdit();
       loadDashboardData(); 
-    } catch (e) {
+    } catch {
       dispatch(addToast({ type: 'error', message: "Erreur lors de l'enregistrement." }));
     }
   };
@@ -105,7 +104,7 @@ export default function PharmacistDashboard() {
       const resMeds = await medicamentService.getAll(1);
       setMedicaments(resMeds.data || resMeds); 
       setStockForm({ ...stockForm, medicament_id: res.data.data.id });
-    } catch (e) {
+    } catch {
       dispatch(addToast({ type: 'error', message: "Erreur lors de la création du médicament." }));
     }
   };
@@ -136,7 +135,7 @@ export default function PharmacistDashboard() {
               </div>
               <div>
                 <label className="block text-sm font-bold text-slate-700 mb-1">Catégorie</label>
-                <select value={newMedForm.category_id} onChange={e => setNewMedForm({...newMedForm, category_id: e.target.value})} className="w-full p-3 border border-slate-200 rounded-xl bg-white">
+                <select required value={newMedForm.category_id} onChange={e => setNewMedForm({...newMedForm, category_id: e.target.value})} className="w-full p-3 border border-slate-200 rounded-xl bg-white">
                   <option value="">-- Choisir une catégorie --</option>
                   {categories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
                 </select>

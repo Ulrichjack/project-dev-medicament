@@ -41,7 +41,7 @@ function AppInit({ children }) {
       try {
         const user = JSON.parse(userString);
         dispatch(setCredentials({ user, token }));
-      } catch (e) {
+      } catch {
         dispatch(logout());
       }
     }

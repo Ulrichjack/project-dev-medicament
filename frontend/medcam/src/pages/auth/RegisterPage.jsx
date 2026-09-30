@@ -267,37 +267,6 @@ export default function RegisterPage() {
               {errors.phone && <p className="text-xs text-red-500">⚠ {errors.phone}</p>}
             </div>
 
-            {/* Rôle */}
-            <div className="flex flex-col gap-1.5">
-              <label className="text-sm font-semibold text-[#374151]">Je suis</label>
-              <div className="flex gap-3">
-                {[
-                  { value: 'client', label: 'Client', icon: (
-                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
-                    </svg>
-                  )},
-                  { value: 'pharmacien', label: 'Pharmacien', icon: (
-                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" />
-                    </svg>
-                  )},
-                ].map((r) => (
-                  <label key={r.value} className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-xl border cursor-pointer transition-all text-sm font-medium ${
-                    formData.role === r.value
-                      ? 'border-[#1E3A8A] bg-[#F0F4FF] text-[#1E3A8A]'
-                      : 'border-[#E2E8F0] text-[#64748B] hover:border-[#94A3B8]'
-                  }`}>
-                    <input type="radio" name="role" value={r.value}
-                      checked={formData.role === r.value}
-                      onChange={handleChange} className="hidden" />
-                    {r.icon}
-                    {r.label}
-                  </label>
-                ))}
-              </div>
-            </div>
-
             {/* Mot de passe */}
             <div className="flex flex-col gap-1.5">
               <label className="text-sm font-semibold text-[#374151]">Mot de passe</label>

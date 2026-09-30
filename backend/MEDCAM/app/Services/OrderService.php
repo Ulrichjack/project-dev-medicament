@@ -2,13 +2,13 @@
 
 namespace App\Services;
 
+use App\Models\Delivery;
 use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\Payment;
-use App\Models\Delivery;
 use App\Models\PharmacyStock;
-use Illuminate\Support\Facades\DB;
 use Exception;
+use Illuminate\Support\Facades\DB;
 
 class OrderService
 {
@@ -23,19 +23,22 @@ class OrderService
 
             $totalAmount = 0;
             $deliveryFee = 1000; // On fixe la livraison à 1000 FCFA pour l'instant
+            $stocks = [];
 
             // 1. VÉRIFICATION DES STOCKS ET CALCUL DU PRIX
             foreach ($data['items'] as $item) {
                 $stock = PharmacyStock::where('pharmacy_id', $data['pharmacy_id'])
-                                      ->where('medicament_id', $item['medicament_id'])
-                                      ->first();
+                    ->where('medicament_id', $item['medicament_id'])
+                    ->lockForUpdate()
+                    ->first();
 
-                if (!$stock || $stock->quantity < $item['quantity']) {
-                    throw new Exception("Stock insuffisant pour le médicament ID: " . $item['medicament_id']);
+                if (! $stock || $stock->quantity < $item['quantity']) {
+                    throw new Exception('Stock insuffisant pour le médicament ID: '.$item['medicament_id']);
                 }
 
                 // On calcule le total : (prix * quantité)
                 $totalAmount += ($stock->price * $item['quantity']);
+                $stocks[$item['medicament_id']] = $stock;
             }
 
             // 2. CRÉATION DE LA COMMANDE GLOBALE
@@ -53,9 +56,7 @@ class OrderService
 
             // 3. CRÉATION DES ITEMS ET DÉDUCTION DU STOCK
             foreach ($data['items'] as $item) {
-                $stock = PharmacyStock::where('pharmacy_id', $data['pharmacy_id'])
-                                      ->where('medicament_id', $item['medicament_id'])
-                                      ->first();
+                $stock = $stocks[$item['medicament_id']];
 
                 // Créer la ligne de commande
                 OrderItem::create([
@@ -88,16 +89,15 @@ class OrderService
         });
     }
 
-
     /**
      * Récupère toutes les commandes d'un utilisateur
      */
     public function getUserOrders($user)
     {
         return Order::where('user_id', $user->id)
-                    ->with('pharmacy') // On charge juste le nom de la pharmacie pour la liste
-                    ->orderBy('created_at', 'desc')
-                    ->paginate(10);
+            ->with('pharmacy') // On charge juste le nom de la pharmacie pour la liste
+            ->orderBy('created_at', 'desc')
+            ->paginate(10);
     }
 
     /**
@@ -106,8 +106,9 @@ class OrderService
     public function getOrderById(int $id, $user)
     {
         $order = Order::with('items.medicament', 'payment', 'delivery', 'pharmacy')
-                      ->where('user_id', $user->id)
-                      ->findOrFail($id);
+            ->where('user_id', $user->id)
+            ->findOrFail($id);
+
         return $order;
     }
 
@@ -126,23 +127,22 @@ class OrderService
             // 1. Remettre les stocks dans la pharmacie
             foreach ($order->items as $item) {
                 PharmacyStock::where('pharmacy_id', $order->pharmacy_id)
-                             ->where('medicament_id', $item->medicament_id)
-                             ->increment('quantity', $item->quantity);
+                    ->where('medicament_id', $item->medicament_id)
+                    ->increment('quantity', $item->quantity);
             }
 
             // 2. Changer le statut de la commande
             $order->update(['status' => 'cancelled']);
 
             // 3. Annuler le paiement et la livraison
-            if ($order->payment) $order->payment->update(['status' => 'cancelled']);
-            if ($order->delivery) $order->delivery->update(['status' => 'cancelled']);
+            if ($order->payment) {
+                $order->payment->update(['status' => 'cancelled']);
+            }
+            if ($order->delivery) {
+                $order->delivery->update(['status' => 'cancelled']);
+            }
 
             return $order;
         });
     }
-
-
-
-
-
 }

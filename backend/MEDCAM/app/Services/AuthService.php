@@ -5,15 +5,14 @@ namespace App\Services;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
+use Laravel\Sanctum\PersonalAccessToken;
 
 class AuthService
 {
-
     /**
      * Crée un nouvel utilisateur et lui retourne un token.
      * Reçoit un tableau de données déjà validées.
      *
-     * @param array $data
      * @return array ['user' => User, 'token' => string]
      */
     public function register(array $data): array
@@ -27,47 +26,44 @@ class AuthService
 
         return [
             'user' => $user,
-            'token' => $token
+            'token' => $token,
         ];
     }
 
     /**
      * Authentifie un utilisateur et lui retourne un token.
      *
-     * @param array $data
      * @return array ['user' => User, 'token' => string]
+     *
      * @throws ValidationException
      */
     public function login(array $data)
     {
         $user = User::where('email', $data['email'])->first();
 
-        if(! $user || ! Hash::check($data['password'], $user->password)){
+        if (! $user || ! $user->is_active || ! Hash::check($data['password'], $user->password)) {
             // alors déclenche une erreur : throw ValidationException::withMessages(['email' => 'Identifiants incorrects.']);
             throw ValidationException::withMessages([
-                    'email' => ['Les identifiants fournis sont incorrects.'],
+                'email' => ['Les identifiants fournis sont incorrects.'],
             ]);
         }
 
         $user->tokens()->delete();
         $token = $user->createToken('auth_token')->plainTextToken;
 
-         return [
+        return [
             'user' => $user,
             'token' => $token,
         ];
-     }
+    }
 
-      /**
+    /**
      * Déconnecte l'utilisateur en révoquant son token actuel.
-     *
-     * @param  \App\Models\User  $user
-     * @return void
      */
     public function logout(User $user): void
     {
         /**
-         * @var \Laravel\Sanctum\PersonalAccessToken|null $token
+         * @var PersonalAccessToken|null $token
          */
         $token = $user->currentAccessToken();
 

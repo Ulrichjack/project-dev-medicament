@@ -22,7 +22,10 @@ export default function OrderStatusPage() {
   const [cancelling, setCancelling] = useState(false)
 
   useEffect(() => {
-    fetchOrder()
+    api.get(`/orders/${id}`)
+      .then((response) => setOrder(response.data.data))
+      .catch(() => setError('Impossible de charger cette commande.'))
+      .finally(() => setLoading(false))
   }, [id])
 
   const fetchOrder = async () => {
@@ -31,7 +34,7 @@ export default function OrderStatusPage() {
       setError(null)
       const response = await api.get(`/orders/${id}`)
       setOrder(response.data.data)
-    } catch (err) {
+    } catch {
       setError('Impossible de charger cette commande.')
     } finally {
       setLoading(false)
@@ -44,7 +47,7 @@ export default function OrderStatusPage() {
       setCancelling(true)
       await api.patch(`/orders/${id}/cancel`)
       fetchOrder()
-    } catch (err) {
+    } catch {
       alert('Erreur lors de l\'annulation.')
     } finally {
       setCancelling(false)
@@ -55,7 +58,7 @@ export default function OrderStatusPage() {
     try {
       await api.post('/reviews', { order_id: id })
       alert('Merci pour votre avis !')
-    } catch (err) {
+    } catch {
       alert('Erreur lors de l\'envoi de l\'avis.')
     }
   }
@@ -181,12 +184,12 @@ export default function OrderStatusPage() {
         {/* Actions */}
         <div className="flex flex-col gap-3">
           {order?.tracking_url && (
-            
+            <a
               href={order.tracking_url}
               target="_blank"
               rel="noreferrer"
               className="w-full bg-[#38BDF8] text-white rounded-xl py-3 text-center font-semibold"
-            <a>
+            >
               <i className="fa fa-truck mr-2" />
               Suivre la livraison
             </a>

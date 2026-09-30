@@ -29,7 +29,7 @@ export const register = async (formData) => {
 export const logout = async () => {
   try {
     await api.post('/auth/logout');
-  } catch (_) {
+  } catch {
     // On logout côté client même si l'API échoue
   }
 };

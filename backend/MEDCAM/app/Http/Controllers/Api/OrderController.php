@@ -18,25 +18,32 @@ class OrderController extends Controller
     public function store(Request $request)
     {
         // Validation basique
-        $request->validate([
+        $validated = $request->validate([
             'pharmacy_id' => 'required|exists:pharmacies,id',
             'delivery_address' => 'required|string',
+            'delivery_latitude' => 'nullable|numeric|between:-90,90',
+            'delivery_longitude' => 'nullable|numeric|between:-180,180',
+            'notes' => 'nullable|string',
+            'payment_method' => 'nullable|in:mtn_mobile_money,orange_money',
             'items' => 'required|array|min:1',
-            'items.*.medicament_id' => 'required|exists:medicaments,id',
+            'items.*.medicament_id' => 'required|distinct|exists:medicaments,id',
             'items.*.quantity' => 'required|integer|min:1',
         ]);
 
         try {
             // On passe les données et l'utilisateur connecté (grâce au token Sanctum)
-            $order = $this->orderService->createOrder($request->all(), $request->user());
-return $this->successResponse(new OrderResource($order), 'Commande créée avec succès', 201);        } catch (\Exception $e) {
+            $order = $this->orderService->createOrder($validated, $request->user());
+
+            return $this->successResponse(new OrderResource($order), 'Commande créée avec succès', 201);
+        } catch (\Exception $e) {
             return $this->errorResponse($e->getMessage(), 400);
         }
     }
 
-    public function index(Request $request):JsonResponse
+    public function index(Request $request): JsonResponse
     {
         $orders = $this->orderService->getUserOrders($request->user());
+
         return $this->successResponse(
             OrderResource::collection($orders),
             'Liste des commandes de l\'utilisateur',
@@ -47,12 +54,13 @@ return $this->successResponse(new OrderResource($order), 'Commande créée avec 
     {
         try {
             $order = $this->orderService->getOrderById($id, $request->user());
+
             return $this->successResponse(
                 new OrderResource($order),
-                'Détails de la commande n°' . $id
+                'Détails de la commande n°'.$id
             );
         } catch (\Exception $e) {
-            return $this->errorResponse("Commande introuvable", 404);
+            return $this->errorResponse('Commande introuvable', 404);
         }
     }
 
@@ -60,11 +68,10 @@ return $this->successResponse(new OrderResource($order), 'Commande créée avec 
     {
         try {
             $order = $this->orderService->cancelOrder($id, $request->user());
-return $this->successResponse(new OrderResource($order), 'Commande annulée avec succès', 200);        } catch (\Exception $e) {
+
+            return $this->successResponse(new OrderResource($order), 'Commande annulée avec succès', 200);
+        } catch (\Exception $e) {
             return $this->errorResponse($e->getMessage(), 400);
         }
     }
-
-
-
 }

@@ -10,7 +10,7 @@ const loadState = () => {
       pharmacyId: pharmacy ? JSON.parse(pharmacy).id : null,
       pharmacyName: pharmacy ? JSON.parse(pharmacy).name : null,
     };
-  } catch (err) {
+  } catch {
     return { items: [], pharmacyId: null, pharmacyName: null };
   }
 };

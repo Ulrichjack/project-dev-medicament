@@ -2,14 +2,14 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Traits\ApiResponse;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\LoginRequest;
 use App\Http\Requests\Auth\RegisterRequest;
 use App\Http\Resources\UserResource;
 use App\Services\AuthService;
-use Illuminate\Http\Request;
+use App\Traits\ApiResponse;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 
 class AuthController extends Controller
 {
@@ -17,38 +17,35 @@ class AuthController extends Controller
 
     use ApiResponse;
 
-    public function __construct(protected AuthService $authService)
-    {
-    }
+    public function __construct(protected AuthService $authService) {}
 
     public function register(RegisterRequest $request): JsonResponse
     {
         $data = $request->validated();
 
         $result = $this->authService->register($data);
-        return $this->successResponse([
-        'user' => new UserResource($result['user']), // <-- ICI
-        'token' => $result['token'],
-        'token_type' => 'Bearer',
-        ], 'Message de succès', 200);
-    }
 
+        return $this->successResponse([
+            'user' => new UserResource($result['user']), // <-- ICI
+            'token' => $result['token'],
+            'token_type' => 'Bearer',
+        ], 'Inscription réussie', 201);
+    }
 
     public function login(LoginRequest $request): JsonResponse
     {
-            $data = $request->validated();
+        $data = $request->validated();
 
-            $result = $this->authService->login($data);
+        $result = $this->authService->login($data);
 
-           return $this->successResponse([
+        return $this->successResponse([
             'user' => new UserResource($result['user']), // <-- ICI
             'token' => $result['token'],
             'token_type' => 'Bearer',
         ], 'Message de succès', 200);
     }
 
-
-   public function logout(Request $request): JsonResponse
+    public function logout(Request $request): JsonResponse
     {
         $this->authService->logout($request->user());
 
@@ -60,7 +57,4 @@ class AuthController extends Controller
     {
         return $this->successResponse(new UserResource($request->user()), 'Profil utilisateur', 200);
     }
-
-
-
 }

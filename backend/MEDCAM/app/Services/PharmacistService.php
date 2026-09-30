@@ -2,13 +2,13 @@
 
 namespace App\Services;
 
+use App\Models\Medicament;
 use App\Models\Notification;
 use App\Models\Order;
-use App\Models\Medicament;
-use App\Models\Pharmacy;
 use App\Models\PharmacyStock;
 use App\Models\User;
 use Exception;
+use Illuminate\Validation\ValidationException;
 
 class PharmacistService
 {
@@ -18,30 +18,29 @@ class PharmacistService
     public function getPharmacyOrders(int $pharmacyId)
     {
         return Order::where('pharmacy_id', $pharmacyId)
-                    ->with('user:id,name,phone') // On charge juste les infos utiles du client
-                    ->orderBy('created_at', 'desc')
-                    ->get();
+            ->with('user:id,name,phone') // On charge juste les infos utiles du client
+            ->orderBy('created_at', 'desc')
+            ->get();
     }
 
     public function getPharmacyStock(User $pharmacist)
     {
         $pharmacy = $pharmacist->pharmacy;
-        if (!$pharmacy) {
-            throw new \Exception("Cet utilisateur n'est pas lié à une pharmacie.");
+        if (! $pharmacy) {
+            throw new Exception("Cet utilisateur n'est pas lié à une pharmacie.");
         }
 
         // On charge le stock ET le nom du médicament associé
         return PharmacyStock::where('pharmacy_id', $pharmacy->id)
-                            ->with('medicament')
-                            ->orderBy('created_at', 'desc')
-                            ->get();
+            ->with('medicament')
+            ->orderBy('created_at', 'desc')
+            ->get();
     }
-
 
     public function addMedicamentToStock(array $data, User $pharmacist)
     {
         $pharmacy = $pharmacist->pharmacy;
-        if (!$pharmacy) {
+        if (! $pharmacy) {
             throw new Exception("Cet utilisateur n'est pas lié à une pharmacie.");
         }
 
@@ -59,42 +58,53 @@ class PharmacistService
         );
     }
 
-    public function updateStockItem(int $stockId, array $data, User $pharmacist){
+    public function updateStockItem(int $stockId, array $data, User $pharmacist)
+    {
         $pharmacy = $pharmacist->pharmacy; // Récupère la pharmacie associée au pharmacien
 
-        if (!$pharmacy) {
+        if (! $pharmacy) {
             throw new Exception("Cet utilisateur n'est pas lié à une pharmacie.");
         }
 
         $stockItem = PharmacyStock::where('id', $stockId)
-                                    ->where('pharmacy_id', $pharmacy->id)
-                                    ->firstOrFail();
+            ->where('pharmacy_id', $pharmacy->id)
+            ->firstOrFail();
 
-        $stockItem->update($data);
+        $stockItem->update(collect($data)->only(['quantity', 'price', 'is_available'])->all());
+
         return $stockItem;
     }
 
     public function updateOrderStatus(int $orderId, string $newStatus, User $pharmacist)
     {
         $pharmacy = $pharmacist->pharmacy;
-        if (!$pharmacy) {
+        if (! $pharmacy) {
             throw new Exception("Cet utilisateur n'est pas lié à une pharmacie.");
         }
-        $order = Order::where('id',$orderId)
-                        ->where('pharmacy_id', $pharmacy->id)
-                        ->firstOrFail();
+        $order = Order::where('id', $orderId)
+            ->where('pharmacy_id', $pharmacy->id)
+            ->firstOrFail();
+        $nextStatus = [
+            'confirmed' => 'preparing',
+            'preparing' => 'ready',
+            'ready' => 'delivered',
+        ][$order->status] ?? null;
+
+        if ($newStatus !== $nextStatus) {
+            throw ValidationException::withMessages([
+                'status' => ['Transition de statut non autorisée.'],
+            ]);
+        }
         $order->update(['status' => $newStatus]);
 
         Notification::create([
-            'user_id'=>$order->user_id,
-            'type'=>'order_status',
-            'message'=>"Votre commande n°{$order->id} est maintenant {$newStatus}.",
+            'user_id' => $order->user_id,
+            'type' => 'order_status',
+            'message' => "Votre commande n°{$order->id} est maintenant {$newStatus}.",
         ]);
 
         return $order;
     }
-
-
 
     public function createNewMedicament(array $data)
     {

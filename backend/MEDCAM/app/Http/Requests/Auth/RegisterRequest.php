@@ -24,11 +24,11 @@ class RegisterRequest extends FormRequest
     {
         return [
             //
-                'name' => 'required|string|max:100',
-                'email' => 'required|string|email|max:150|unique:users',
-                'password' => 'required|string|min:8|confirmed',
-                'phone'    => 'nullable|string|max:20',
-                'role' => 'required|string|in:client,pharmacien',
-             ];
+            'name' => 'required|string|max:100',
+            'email' => 'required|string|email|max:150|unique:users',
+            'password' => 'required|string|min:8|confirmed',
+            'phone' => 'nullable|string|max:20',
+            'role' => 'required|string|in:client',
+        ];
     }
 }

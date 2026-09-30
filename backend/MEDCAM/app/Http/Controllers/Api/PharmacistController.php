@@ -7,8 +7,8 @@ use App\Http\Resources\OrderResource; // <-- IMPORT
 use App\Http\Resources\StockResource; // <-- IMPORT
 use App\Services\PharmacistService;
 use App\Traits\ApiResponse;
-use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 
 class PharmacistController extends Controller
 {
@@ -21,7 +21,7 @@ class PharmacistController extends Controller
         $pharmacist = $request->user();
         $pharmacy = $pharmacist->pharmacy;
 
-        if (!$pharmacy) {
+        if (! $pharmacy) {
             return $this->errorResponse("Ce pharmacien n'est associé à aucune pharmacie.", 403);
         }
 
@@ -47,10 +47,14 @@ class PharmacistController extends Controller
         );
     }
 
-
     public function addStock(Request $request)
     {
-        $stockItem = $this->pharmacistService->addMedicamentToStock($request->all(), $request->user());
+        $validated = $request->validate([
+            'medicament_id' => 'required|integer|exists:medicaments,id',
+            'quantity' => 'required|integer|min:0',
+            'price' => 'required|numeric|min:0',
+        ]);
+        $stockItem = $this->pharmacistService->addMedicamentToStock($validated, $request->user());
 
         // ON UTILISE STOCK RESOURCE ICI
         return $this->successResponse(new StockResource($stockItem), 'Médicament ajouté au stock', 201);
@@ -58,7 +62,12 @@ class PharmacistController extends Controller
 
     public function updateStock(Request $request, int $stockId)
     {
-        $updatedItem = $this->pharmacistService->updateStockItem($stockId, $request->all(), $request->user());
+        $validated = $request->validate([
+            'quantity' => 'sometimes|required|integer|min:0',
+            'price' => 'sometimes|required|numeric|min:0',
+            'is_available' => 'sometimes|required|boolean',
+        ]);
+        $updatedItem = $this->pharmacistService->updateStockItem($stockId, $validated, $request->user());
 
         // ON UTILISE STOCK RESOURCE ICI
         return $this->successResponse(new StockResource($updatedItem), 'Stock mis à jour', 200);
@@ -66,22 +75,27 @@ class PharmacistController extends Controller
 
     public function updateOrderStatus(Request $request, int $orderId)
     {
-        $newStatus = $request->input('status');
+        $validated = $request->validate([
+            'status' => 'required|in:preparing,ready,delivered',
+        ]);
+        $newStatus = $validated['status'];
         $updatedOrder = $this->pharmacistService->updateOrderStatus($orderId, $newStatus, $request->user());
 
         // ON UTILISE ORDER RESOURCE ICI
         return $this->successResponse(new OrderResource($updatedOrder), 'Statut de la commande mis à jour', 200);
     }
 
-
     public function createMedicament(Request $request)
     {
         // Validation basique
-        $request->validate([
+        $validated = $request->validate([
             'name' => 'required|string|max:200',
+            'active_substance' => 'nullable|string|max:200',
+            'category_id' => 'required|integer|exists:categories,id',
+            'prescription_required' => 'sometimes|boolean',
         ]);
 
-        $medicament = $this->pharmacistService->createNewMedicament($request->all());
+        $medicament = $this->pharmacistService->createNewMedicament($validated);
 
         return $this->successResponse($medicament, 'Nouveau médicament ajouté au catalogue', 201);
     }

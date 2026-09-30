@@ -32,7 +32,9 @@ export default function ProfilePage() {
     setLogoutLoading(true);
     try {
       await logoutApi();
-    } catch (_) {}
+    } catch {
+      // La déconnexion locale reste possible si l'API est indisponible.
+    }
     finally {
       dispatch(logout());
       navigate('/login');

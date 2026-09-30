@@ -39,7 +39,10 @@ const HomePage = () => {
   };
 
   useEffect(() => {
-    fetchMeds();
+    medicamentService.getAll(1)
+      .then((data) => setMedicaments(data.slice(0, 6)))
+      .catch((error) => console.error(error))
+      .finally(() => setLoading(false));
     
     // Demander la géolocalisation pour le calcul de distance plus tard
     if ("geolocation" in navigator) {
